@@ -188,7 +188,7 @@ ApplicationWindow {
             anchors.leftMargin: 15
             anchors.rightMargin: 15 
             height: 40
-            background: Rectangle { color: root.boardIndex == 3 ? "grey" : "transparent"; border.width: 2; border.color: "darkgrey"; radius: 3; }
+            background: Rectangle { color: root.boardIndex == 4 ? "grey" : "transparent"; border.width: 2; border.color: "darkgrey"; radius: 3; }
             Text {
               anchors.fill: parent
               horizontalAlignment: Text.AlignHCenter
