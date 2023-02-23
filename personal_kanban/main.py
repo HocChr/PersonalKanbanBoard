@@ -1,7 +1,7 @@
 from __future__ import annotations
 import sys
 
-from PyQt5.QtGui import QGuiApplication, QFont
+from PyQt5.QtGui import QGuiApplication, QFont, QIcon
 from PyQt5.QtQml import QQmlApplicationEngine
 
 import kanban_board_gui_model 
@@ -24,6 +24,7 @@ kanban_board_gui_model_done = kanban_board_gui_model.KanbanBoardModel(kanban_per
 app = QGuiApplication(sys.argv)
 font = QFont("Segoe UI Variable")
 app.setFont(font)
+app.setWindowIcon(QIcon("kanban_icon_small.ico"))
 engine = QQmlApplicationEngine()
 engine.rootContext().setContextProperty('kanbanBoardModelTodo', kanban_board_gui_model_todo)
 engine.rootContext().setContextProperty('kanbanBoardModelReady', kanban_board_gui_model_ready)

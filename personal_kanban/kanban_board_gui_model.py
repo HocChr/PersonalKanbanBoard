@@ -118,9 +118,6 @@ class KanbanBoardModel(QAbstractListModel):
         else:
             end = local_target + 1
 
-        for i in self.original_data:
-            print(i.title)
-        
         self.resetModel()
 
     @pyqtSlot(int, int, int, int)

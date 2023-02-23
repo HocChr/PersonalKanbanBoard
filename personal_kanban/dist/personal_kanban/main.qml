@@ -91,10 +91,7 @@ ApplicationWindow {
             }
             
             onClicked: {
-              newTaskDialog.titleText = "" 
-              newTaskDialog.descriptionText = ""
-              newTaskDialog.dueDateText = ""
-              newTaskDialog.runDialog(0, 0)
+              newTaskDialog.runDialog(0, "", "", "")
             }
           }
 
@@ -235,11 +232,11 @@ ApplicationWindow {
           DropArea {
                anchors.fill: parent
                onDropped: {
-                  var originalIndexSource = drag.source.parent.mod.getOriginalIndex(drag.source.dragItemIndex)
+                  var originalIndexSource = drag.source.parent.model.getOriginalIndex(drag.source.dragItemIndex)
                   var localIndexSource = drag.source.dragItemIndex
-                  drag.source.parent.mod.setStatus(drag.source.dragItemIndex, kanbanBoardModelTodo.getStatus())
+                  drag.source.parent.model.setStatus(drag.source.dragItemIndex, kanbanBoardModelTodo.getStatus())
                   kanbanBoardModelTodo.resetModel()
-                  drag.source.parent.mod.resetModel()
+                  drag.source.parent.model.resetModel()
                }
            }
 
@@ -256,15 +253,13 @@ ApplicationWindow {
             spacing: 10
             model: kanbanBoardModelTodo
 
-            property Item dragParent: dragContainerTodo
-
             delegate: Item {
             id: delegateItem
             width: listTodos.width
             height: 60
             Rectangle {
                 id: dragRectTodo
-                color: "#3d3d40"
+                color: "#2d2d2f"
                 height: 60
                 width: listTodos.width
 
@@ -303,8 +298,7 @@ ApplicationWindow {
                       anchors.verticalCenter: parent.verticalCenter
                       anchors.left: parent.left
                       anchors.leftMargin: 10
-                      anchors.right: parent.right
-                      elide: Text.ElideRight
+
                   }
                   Text {
                       text: deadline
@@ -343,7 +337,7 @@ ApplicationWindow {
                         when: dragRectTodo.Drag.active
                         ParentChange {
                             target: dragRectTodo
-                            parent: listTodos.dragParent 
+                            parent: listTodos
                         }
 
                         AnchorChanges {
@@ -361,13 +355,13 @@ ApplicationWindow {
               DropArea {
                 anchors.fill: parent
                 onDropped: {
-                    var originalIndexSource = drag.source.parent.mod.getOriginalIndex(drag.source.dragItemIndex)
+                    var originalIndexSource = drag.source.parent.model.getOriginalIndex(drag.source.dragItemIndex)
                     var originalIndexTarget = kanbanBoardModelTodo.getOriginalIndex(dragRectTodo.dragItemIndex)
                     var localIndexSource = drag.source.dragItemIndex
                     var localIndexTarget = dragRectTodo.dragItemIndex
-                    drag.source.parent.mod.setStatus(drag.source.dragItemIndex, kanbanBoardModelTodo.getStatus())
+                    drag.source.parent.model.setStatus(drag.source.dragItemIndex, kanbanBoardModelTodo.getStatus())
                     kanbanBoardModelTodo.addByDrop(originalIndexSource, originalIndexTarget, localIndexSource, localIndexTarget)
-                    drag.source.parent.mod.resetModel()
+                    drag.source.parent.model.resetModel()
                  }
               }
           }
@@ -390,7 +384,6 @@ ApplicationWindow {
           width: (parent.width - toolbar.width) / 4 - 15
           radius: 15
 
-          property var hoo: "haha"
           Text {
             id: readyText
             text: "Ready"
@@ -406,11 +399,11 @@ ApplicationWindow {
           DropArea {
             anchors.fill: parent
             onDropped: {
-               var originalIndexSource = drag.source.parent.mod.getOriginalIndex(drag.source.dragItemIndex)
+               var originalIndexSource = drag.source.parent.model.getOriginalIndex(drag.source.dragItemIndex)
                var localIndexSource = drag.source.dragItemIndex
-               drag.source.parent.mod.setStatus(drag.source.dragItemIndex, kanbanBoardModelReady.getStatus())
+               drag.source.parent.model.setStatus(drag.source.dragItemIndex, kanbanBoardModelReady.getStatus())
                kanbanBoardModelReady.resetModel()
-               drag.source.parent.mod.resetModel()
+               drag.source.parent.model.resetModel()
                }
           }
 
@@ -426,8 +419,6 @@ ApplicationWindow {
             anchors.rightMargin: 10
             spacing: 10
             model: kanbanBoardModelReady
-
-            property Item dragParent: dragContainerReady
 
             delegate:Item {
             id: delegateItem
@@ -475,8 +466,7 @@ ApplicationWindow {
                       anchors.verticalCenter: parent.verticalCenter
                       anchors.left: parent.left
                       anchors.leftMargin: 10
-                      anchors.right: parent.right
-                      elide: Text.ElideRight
+
                   }
                   Text {
                       text: deadline 
@@ -513,7 +503,7 @@ ApplicationWindow {
                          when: dragRectReady.Drag.active
                          ParentChange {
                              target: dragRectReady
-                             parent: listReadys.dragParent
+                             parent: listReadys
                          }
 
                          AnchorChanges {
@@ -530,13 +520,13 @@ ApplicationWindow {
                DropArea {
                  anchors.fill: parent
                  onDropped: {
-                    var originalIndexSource = drag.source.parent.mod.getOriginalIndex(drag.source.dragItemIndex)
+                    var originalIndexSource = drag.source.parent.model.getOriginalIndex(drag.source.dragItemIndex)
                     var originalIndexTarget = kanbanBoardModelReady.getOriginalIndex(dragRectReady.dragItemIndex)
                     var localIndexSource = drag.source.dragItemIndex
                     var localIndexTarget = dragRectReady.dragItemIndex
-                    drag.source.parent.mod.setStatus(drag.source.dragItemIndex, kanbanBoardModelReady.getStatus())
+                    drag.source.parent.model.setStatus(drag.source.dragItemIndex, kanbanBoardModelReady.getStatus())
                     kanbanBoardModelReady.addByDrop(originalIndexSource, originalIndexTarget, localIndexSource, localIndexTarget)
-                    drag.source.parent.mod.resetModel()
+                    drag.source.parent.model.resetModel()
                   }
                }
             }
@@ -575,11 +565,11 @@ ApplicationWindow {
           DropArea {
             anchors.fill: parent
             onDropped: {
-               var originalIndexSource = drag.source.parent.mod.getOriginalIndex(drag.source.dragItemIndex)
+               var originalIndexSource = drag.source.parent.model.getOriginalIndex(drag.source.dragItemIndex)
                var localIndexSource = drag.source.dragItemIndex
-               drag.source.parent.mod.setStatus(drag.source.dragItemIndex, kanbanBoardModelDoing.getStatus())
+               drag.source.parent.model.setStatus(drag.source.dragItemIndex, kanbanBoardModelDoing.getStatus())
                kanbanBoardModelDoing.resetModel()
-               drag.source.parent.mod.resetModel()
+               drag.source.parent.model.resetModel()
                }
           }
 
@@ -595,8 +585,6 @@ ApplicationWindow {
             anchors.rightMargin: 10
             spacing: 10
             model: kanbanBoardModelDoing
-
-            property Item dragParent: dragContainerDoing
 
             delegate:Item {
             id: delegateItem
@@ -644,8 +632,7 @@ ApplicationWindow {
                       anchors.verticalCenter: parent.verticalCenter
                       anchors.left: parent.left
                       anchors.leftMargin: 10
-                      anchors.right: parent.right
-                      elide: Text.ElideRight
+
                   }
                   Text {
                       text: deadline 
@@ -683,7 +670,7 @@ ApplicationWindow {
                          when: dragRectDoing.Drag.active
                          ParentChange {
                              target: dragRectDoing
-                             parent: listDoings.dragParent 
+                             parent: listDoings
                          }
 
                          AnchorChanges {
@@ -700,13 +687,13 @@ ApplicationWindow {
                DropArea {
                  anchors.fill: parent
                  onDropped: {
-                    var originalIndexSource = drag.source.parent.mod.getOriginalIndex(drag.source.dragItemIndex)
+                    var originalIndexSource = drag.source.parent.model.getOriginalIndex(drag.source.dragItemIndex)
                     var originalIndexTarget = kanbanBoardModelDoing.getOriginalIndex(dragRectDoing.dragItemIndex)
                     var localIndexSource = drag.source.dragItemIndex
                     var localIndexTarget = dragRectDoing.dragItemIndex
-                    drag.source.parent.mod.setStatus(drag.source.dragItemIndex, kanbanBoardModelDoing.getStatus())
+                    drag.source.parent.model.setStatus(drag.source.dragItemIndex, kanbanBoardModelDoing.getStatus())
                     kanbanBoardModelDoing.addByDrop(originalIndexSource, originalIndexTarget, localIndexSource, localIndexTarget)
-                    drag.source.parent.mod.resetModel()
+                    drag.source.parent.model.resetModel()
                   }
                }
             }
@@ -746,11 +733,11 @@ ApplicationWindow {
           DropArea {
             anchors.fill: parent
             onDropped: {
-               var originalIndexSource = drag.source.parent.mod.getOriginalIndex(drag.source.dragItemIndex)
+               var originalIndexSource = drag.source.parent.model.getOriginalIndex(drag.source.dragItemIndex)
                var localIndexSource = drag.source.dragItemIndex
-               drag.source.parent.mod.setStatus(drag.source.dragItemIndex, kanbanBoardModelDone.getStatus())
+               drag.source.parent.model.setStatus(drag.source.dragItemIndex, kanbanBoardModelDone.getStatus())
                kanbanBoardModelDone.resetModel()
-               drag.source.parent.mod.resetModel()
+               drag.source.parent.model.resetModel()
                }
           }
 
@@ -766,8 +753,6 @@ ApplicationWindow {
             anchors.rightMargin: 10
             spacing: 10
             model: kanbanBoardModelDone
-
-            property var dragParent: dragContainerDone
 
             delegate:Item {
             id: delegateItem
@@ -815,8 +800,7 @@ ApplicationWindow {
                       anchors.verticalCenter: parent.verticalCenter
                       anchors.left: parent.left
                       anchors.leftMargin: 10
-                      anchors.right: parent.right
-                      elide: Text.ElideRight
+
                   }
                   Text {
                       text: deadline
@@ -853,7 +837,7 @@ ApplicationWindow {
                          when: dragRectDone.Drag.active
                          ParentChange {
                              target: dragRectDone
-                             parent: listDones.dragParent 
+                             parent: listDones
                          }
 
                          AnchorChanges {
@@ -870,13 +854,13 @@ ApplicationWindow {
                DropArea {
                  anchors.fill: parent
                  onDropped: {
-                    var originalIndexSource = drag.source.parent.mod.getOriginalIndex(drag.source.dragItemIndex)
+                    var originalIndexSource = drag.source.parent.model.getOriginalIndex(drag.source.dragItemIndex)
                     var originalIndexTarget = kanbanBoardModelDone.getOriginalIndex(dragRectDone.dragItemIndex)
                     var localIndexSource = drag.source.dragItemIndex
                     var localIndexTarget = dragRectDone.dragItemIndex
-                    drag.source.parent.mod.setStatus(drag.source.dragItemIndex, kanbanBoardModelDone.getStatus())
+                    drag.source.parent.model.setStatus(drag.source.dragItemIndex, kanbanBoardModelDone.getStatus())
                     kanbanBoardModelDone.addByDrop(originalIndexSource, originalIndexTarget, localIndexSource, localIndexTarget)
-                    drag.source.parent.mod.resetModel()
+                    drag.source.parent.model.resetModel()
                   }
                }
             }
@@ -1012,7 +996,6 @@ ApplicationWindow {
                  anchors.verticalCenter: parent.verticalCenter
                  color: "white"
                  font.pointSize: 10
-                 readOnly: true
                  background: Rectangle { color: "#232323"; border.width: 1;  border.color: "darkgrey" }
                  //text:Qt.formatDate(cal.selectedDate, "dd-MM-yyyy")
                  Button {
@@ -1022,6 +1005,7 @@ ApplicationWindow {
                      anchors.right: textDate.right
                      anchors.verticalCenter: textDate.verticalCenter
                      background: Rectangle { color: "#7d8591"; border.width: 1;  border.color: "darkgrey" }
+
                      onClicked: {
                        cal.visible=true
                      }
@@ -1135,30 +1119,5 @@ ApplicationWindow {
         }
        }
        //  ---------------------------- End Edit Dialog ------------------------------------------------
-
-       // --- Drag item with highes z-Layer to reparent the drag item to it (to ensure the drag item stays on top)
-       Item {
-          id: dragContainerTodo
-          anchors.fill: parent
-          property var mod: kanbanBoardModelTodo 
-       }
-
-       Item {
-          id: dragContainerReady
-          anchors.fill: parent
-          property var mod: kanbanBoardModelReady
-       }
-
-       Item {
-          id: dragContainerDoing
-          anchors.fill: parent
-          property var mod: kanbanBoardModelDoing
-       }
-
-       Item {
-          id: dragContainerDone
-          anchors.fill: parent
-          property var mod: kanbanBoardModelDone
-       }
  }
 }
