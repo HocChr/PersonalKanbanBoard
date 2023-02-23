@@ -180,6 +180,32 @@ ApplicationWindow {
           }
 
           Button {
+            id: aaiButton 
+            anchors.top: operationalButton.bottom
+            anchors.left: toolbar.left
+            anchors.right: toolbar.right
+            anchors.topMargin: 15
+            anchors.leftMargin: 15
+            anchors.rightMargin: 15 
+            height: 40
+            background: Rectangle { color: root.boardIndex == 3 ? "grey" : "transparent"; border.width: 2; border.color: "darkgrey"; radius: 3; }
+            Text {
+              anchors.fill: parent
+              horizontalAlignment: Text.AlignHCenter
+              verticalAlignment: Text.AlignVCenter
+              font.pixelSize: 12
+              color: "#FFFFFF"
+              text: "AAI"
+              font.bold: true
+            }
+            
+            onClicked: {
+              root.title = "AAI"
+              root.boardIndex = 4
+            }
+          }
+
+          Button {
             id: closeAppButton
             anchors.left: toolbar.left
             anchors.right: toolbar.right
