@@ -1,0 +1,12 @@
+*.vim
+*.swp
+*.exe
+*.spec
+tags
+
+coordination.json
+operational.json
+strategic.json
+
+*/__pycache__/
+*/build/
