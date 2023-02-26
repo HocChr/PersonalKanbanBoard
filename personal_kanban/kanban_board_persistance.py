@@ -20,7 +20,7 @@ class KanbanBoardHandler:
         self.index_to_file_paths = {
           0: "undefined",
           1: "strategic.json",
-          2: "coordination.json,",
+          2: "coordination.json",
           3: "operational.json",
           4: "aai.json"
         }
