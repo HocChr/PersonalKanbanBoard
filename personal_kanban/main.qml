@@ -918,7 +918,7 @@ ApplicationWindow {
        Dialog {
         id: newTaskDialog
         height: 600
-        width: 500
+        width: 800
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
 
@@ -999,19 +999,11 @@ ApplicationWindow {
              width: parent.width
              color: "transparent"
 
-             Label {
-                 text: "Task name:"
-                 anchors.verticalCenter: parent.verticalCenter
-                 anchors.left: parent.left
-                 color: "white"
-                 font.pointSize: 10
-
-             }
              TextField {
               id: taskNameField
               x: .3*parent.width
               width: .65*parent.width
-              anchors.verticalCenter: parent.verticalCenter
+              anchors.fill: parent
               color: "white"
               font.pointSize: 10
               background: Rectangle { color: "#232323"; border.width: 1; border.color: "darkgrey"; }
@@ -1024,17 +1016,9 @@ ApplicationWindow {
              width: parent.width
              color: "transparent"
 
-             Label {
-                 text: "Due Date"
-                 anchors.verticalCenter: parent.verticalCenter
-                 anchors.left: parent.left
-                 color: "white"
-                 font.pointSize: 10
-             }
              TextField {
                  id: textDate
-                 x: .3*parent.width
-                 width: .65*parent.width
+                 width: 175
                  anchors.verticalCenter: parent.verticalCenter
                  color: "white"
                  font.pointSize: 10
@@ -1044,10 +1028,18 @@ ApplicationWindow {
                  Button {
                      id: button
                      height: textDate.height
-                     width: 22
+                     width: 75
                      anchors.right: textDate.right
                      anchors.verticalCenter: textDate.verticalCenter
                      background: Rectangle { color: "#7d8591"; border.width: 1;  border.color: "darkgrey" }
+                     Text {
+                       anchors.fill: parent
+                       horizontalAlignment: Text.AlignHCenter
+                       verticalAlignment: Text.AlignVCenter
+                       font.pixelSize: 10
+                       text: "DUE DATE"
+                       font.bold: true
+                       }
                      onClicked: {
                        cal.visible=true
                      }
@@ -1083,6 +1075,7 @@ ApplicationWindow {
              width: parent.width
              TextArea {
               id: noteText
+              wrapMode: TextEdit.WordWrap
               text: ""
               color: "white"
               font.pointSize: 10
