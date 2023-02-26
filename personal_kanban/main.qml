@@ -195,12 +195,12 @@ ApplicationWindow {
               verticalAlignment: Text.AlignVCenter
               font.pixelSize: 12
               color: "#FFFFFF"
-              text: "AAI"
+              text: "ANNUAL"
               font.bold: true
             }
             
             onClicked: {
-              root.title = "AAI"
+              root.title = "ANNUAL"
               root.boardIndex = 4
             }
           }
