@@ -36,8 +36,9 @@ ApplicationWindow {
     }
 
     onItemDataChange: {
-        if(runArgs == 0)
-            kanbanBoardModelTodo.addData(title, description, deadline, 0, col)
+        if(runArgs == 0) {
+            kanbanBoardModelTodo.addData(title, description, deadline, col)
+        }
         else if(runArgs == 1) {
             kanbanBoardModelTodo.changeData(itemIndex, title, description, deadline, col);
             kanbanBoardModelReady.changeData(itemIndex, title, description, deadline, col);
