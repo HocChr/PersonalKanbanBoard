@@ -35,7 +35,7 @@ class KanbanBoardHandler:
           with open(self.index_to_file_paths[board_index], 'r') as f:
               data = json.load(f, object_hook=customDataDecoder)
               for it in data:
-                  entity = kanaban_entity.KanabanEntity(it.title, it.description, it.deadline, it.status)
+                  entity = kanaban_entity.KanabanEntity(it.title, it.description, it.deadline, it.status, it.color)
                   self._kanban_board.append_entity(entity)
 
     def get_kanban_board(self, board_index: int, reload = False):

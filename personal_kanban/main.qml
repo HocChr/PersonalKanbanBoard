@@ -3,7 +3,7 @@ import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.0
 import QtQuick.Controls 1.4 as QQC1
 import QtQuick.Controls.Styles 1.4 as QQC1Styles
-
+import QtQuick 2.15 as QQ215
 
 ApplicationWindow {
     visible: true
@@ -17,17 +17,32 @@ ApplicationWindow {
     visibility: "Maximized"
     flags: Qt.Window
 
-    signal itemDataChange(var runArgs, var itemIndex, var title, var description, var deadline);
+    signal itemDataChange(var runArgs, var itemIndex, var title, var description, var deadline, var col);
     signal itemDelete(var itemIndex);
+
+    ListModel {
+        id: colorModel
+        ListElement { name: "white"; col: "white"; key: 0 }
+        ListElement { name: "black"; col: "black"; key: 1 }
+        ListElement { name: "red"; col: "#ff5252"; key: 2  }
+        ListElement { name: "blue"; col: "#5252ff"; key: 3  }
+        ListElement { name: "green"; col: "#60ff52"; key: 4  }
+        ListElement { name: "yellow"; col: "#fcff52"; key: 5  }
+    }
+
+    function find(model, criteria) {
+      for(var i = 0; i < model.count; ++i) if (criteria(model.get(i))) return model.get(i)
+      return null
+    }
 
     onItemDataChange: {
      if(runArgs == 0)
-      kanbanBoardModelTodo.addData(title, description, deadline)
+      kanbanBoardModelTodo.addData(title, description, deadline, 0, col)
      else if(runArgs == 1) {
-      kanbanBoardModelTodo.changeData(itemIndex, title, description, deadline);
-      kanbanBoardModelReady.changeData(itemIndex, title, description, deadline);
-      kanbanBoardModelDoing.changeData(itemIndex, title, description, deadline);
-      kanbanBoardModelDone.changeData(itemIndex, title, description, deadline);
+      kanbanBoardModelTodo.changeData(itemIndex, title, description, deadline, col);
+      kanbanBoardModelReady.changeData(itemIndex, title, description, deadline, col);
+      kanbanBoardModelDoing.changeData(itemIndex, title, description, deadline, col);
+      kanbanBoardModelDone.changeData(itemIndex, title, description, deadline, col);
      }
     }
 
@@ -94,6 +109,7 @@ ApplicationWindow {
               newTaskDialog.titleText = "" 
               newTaskDialog.descriptionText = ""
               newTaskDialog.dueDateText = ""
+              newTaskDialog.selectedColor = 0
               newTaskDialog.runDialog(0, 0)
             }
           }
@@ -242,7 +258,11 @@ ApplicationWindow {
           anchors.topMargin: 15
           anchors.leftMargin: 15
           anchors.bottomMargin: 15
-          color:  "#1e1f21" 
+          gradient: QQ215.Gradient {
+              orientation: Gradient.Horizontal
+              GradientStop { position: 0.0; color: "#1e1f21" }
+              GradientStop { position: 1.0; color: "#222326" }
+          }
           width: (parent.width - toolbar.width) / 4 - 15
           radius: 15
 
@@ -290,7 +310,11 @@ ApplicationWindow {
             height: 60
             Rectangle {
                 id: dragRectTodo
-                color: "#3d3d40"
+                gradient: QQ215.Gradient {
+                    orientation: Gradient.Horizontal
+                    GradientStop { position: 0.0; color: "#343437" }
+                    GradientStop { position: 1.0; color: "#3d3d40" }
+                }
                 height: 60
                 width: listTodos.width
 
@@ -308,7 +332,7 @@ ApplicationWindow {
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     anchors.right: parent.right
-                    color: "white"
+                    color: find(colorModel, function(item) { return item.key === mycolor }).col
                     width: parent.width / 4
                   }
 
@@ -353,6 +377,7 @@ ApplicationWindow {
                       newTaskDialog.titleText = title 
                       newTaskDialog.descriptionText = description
                       newTaskDialog.dueDateText = deadline
+                      newTaskDialog.selectedColor = mycolor 
                       newTaskDialog.runDialog(1, kanbanBoardModelTodo.getOriginalIndex(index))
                     }
 
@@ -412,11 +437,14 @@ ApplicationWindow {
           anchors.topMargin: 15
           anchors.leftMargin: 15
           anchors.bottomMargin: 15
-          color:  "#1e1f21" 
+          gradient: QQ215.Gradient {
+              orientation: Gradient.Horizontal
+              GradientStop { position: 0.0; color: "#1e1f21" }
+              GradientStop { position: 1.0; color: "#222326" }
+          }
           width: (parent.width - toolbar.width) / 4 - 15
           radius: 15
 
-          property var hoo: "haha"
           Text {
             id: readyText
             text: "Ready"
@@ -462,7 +490,11 @@ ApplicationWindow {
 
               Rectangle {
                   id: dragRectReady
-                  color: "#3d3d40"
+                  gradient: QQ215.Gradient {
+                      orientation: Gradient.Horizontal
+                      GradientStop { position: 0.0; color: "#343437" }
+                      GradientStop { position: 1.0; color: "#3d3d40" }
+                  }
                   height: 60
                   width: listReadys.width
 
@@ -480,7 +512,7 @@ ApplicationWindow {
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     anchors.right: parent.right
-                    color: "white"
+                    color: find(colorModel, function(item) { return item.key === mycolor }).col
                     width: parent.width / 4
                   }
 
@@ -524,6 +556,7 @@ ApplicationWindow {
                       newTaskDialog.titleText = title 
                       newTaskDialog.descriptionText = description
                       newTaskDialog.dueDateText = deadline
+                      newTaskDialog.selectedColor = mycolor 
                       newTaskDialog.runDialog(1, kanbanBoardModelReady.getOriginalIndex(index))
                     }
  
@@ -582,7 +615,11 @@ ApplicationWindow {
           anchors.topMargin: 15
           anchors.leftMargin: 15
           anchors.bottomMargin: 15
-          color:  "#1e1f21" 
+          gradient: QQ215.Gradient {
+              orientation: Gradient.Horizontal
+              GradientStop { position: 0.0; color: "#1e1f21" }
+              GradientStop { position: 1.0; color: "#222326" }
+          }
           width: (parent.width - toolbar.width) / 4 - 15
           radius: 15
 
@@ -631,7 +668,11 @@ ApplicationWindow {
 
               Rectangle {
                   id: dragRectDoing
-                  color: "#3d3d40"
+                  gradient: QQ215.Gradient {
+                      orientation: Gradient.Horizontal
+                      GradientStop { position: 0.0; color: "#343437" }
+                      GradientStop { position: 1.0; color: "#3d3d40" }
+                  }
                   height: 60
                   width: listDoings.width
 
@@ -649,7 +690,7 @@ ApplicationWindow {
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     anchors.right: parent.right
-                    color: "white"
+                    color: find(colorModel, function(item) { return item.key === mycolor }).col
                     width: parent.width / 4
                   }
 
@@ -693,6 +734,7 @@ ApplicationWindow {
                       newTaskDialog.titleText = title 
                       newTaskDialog.descriptionText = description
                       newTaskDialog.dueDateText = deadline
+                      newTaskDialog.selectedColor = mycolor 
                       newTaskDialog.runDialog(1, kanbanBoardModelDoing.getOriginalIndex(index))
                     }
 
@@ -753,7 +795,11 @@ ApplicationWindow {
           anchors.topMargin: 15
           anchors.leftMargin: 15
           anchors.bottomMargin: 15
-          color:  "#1e1f21" 
+          gradient: QQ215.Gradient {
+              orientation: Gradient.Horizontal
+              GradientStop { position: 0.0; color: "#1e1f21" }
+              GradientStop { position: 1.0; color: "#222326" }
+          }
           width: (parent.width - toolbar.width) / 4 - 30
           radius: 15
 
@@ -802,7 +848,11 @@ ApplicationWindow {
 
               Rectangle {
                   id: dragRectDone
-                  color: "#3d3d40"
+                  gradient: QQ215.Gradient {
+                      orientation: Gradient.Horizontal
+                      GradientStop { position: 0.0; color: "#343437" }
+                      GradientStop { position: 1.0; color: "#3d3d40" }
+                  }
                   height: 60
                   width: listDones.width
 
@@ -820,7 +870,7 @@ ApplicationWindow {
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     anchors.right: parent.right
-                    color: "white"
+                    color: find(colorModel, function(item) { return item.key === mycolor }).col
                     width: parent.width / 4
                   }
 
@@ -861,10 +911,11 @@ ApplicationWindow {
                   drag.target: dragRectDone
  
                   onClicked: {
-                    newTaskDialog.titleText = title 
-                    newTaskDialog.descriptionText = description
-                    newTaskDialog.dueDateText = deadline
-                    newTaskDialog.runDialog(1, kanbanBoardModelDone.getOriginalIndex(index))
+                      newTaskDialog.titleText = title 
+                      newTaskDialog.descriptionText = description
+                      newTaskDialog.dueDateText = deadline
+                      newTaskDialog.selectedColor = mycolor 
+                      newTaskDialog.runDialog(1, kanbanBoardModelDone.getOriginalIndex(index))
                   }
 
                   drag.onActiveChanged: {
@@ -925,6 +976,7 @@ ApplicationWindow {
         property alias titleText: taskNameField.text
         property alias descriptionText: noteText.text
         property alias dueDateText: textDate.text
+        property var selectedColor: 0
 
         property int startArgument: -1
         property int itemIndex: -1        
@@ -932,6 +984,7 @@ ApplicationWindow {
         function runDialog(arg: int, itemIndex: int) {
           newTaskDialog.startArgument = arg;
           newTaskDialog.itemIndex = itemIndex
+          control.buttonSelectedColor = find(colorModel, function(item) { return item.key === newTaskDialog.selectedColor }).col;
           newTaskDialog.open()
         }
 
@@ -944,7 +997,7 @@ ApplicationWindow {
           color: "#232323"
           border.width: 0
          
-          ColumnLayout  {
+          ColumnLayout {
            id: topColumn
             anchors.top: parent.top
             anchors.left: parent.left
@@ -1012,41 +1065,98 @@ ApplicationWindow {
             
             // Due Date
             Rectangle  {
-             height: 30;
-             width: parent.width
-             color: "transparent"
-
-             TextField {
-                 id: textDate
-                 width: 175
-                 anchors.verticalCenter: parent.verticalCenter
-                 color: "white"
-                 font.pointSize: 10
-                 readOnly: true
-                 background: Rectangle { color: "#232323"; border.width: 1;  border.color: "darkgrey" }
-                 //text:Qt.formatDate(cal.selectedDate, "dd-MM-yyyy")
-                 Button {
-                     id: button
-                     height: textDate.height
-                     width: 75
-                     anchors.right: textDate.right
-                     anchors.verticalCenter: textDate.verticalCenter
-                     background: Rectangle { color: "#7d8591"; border.width: 1;  border.color: "darkgrey" }
-                     Text {
-                       anchors.fill: parent
-                       horizontalAlignment: Text.AlignHCenter
-                       verticalAlignment: Text.AlignVCenter
-                       font.pixelSize: 10
-                       text: "DUE DATE"
-                       font.bold: true
+               height: 30;
+               width: parent.width
+               color: "transparent"
+                // Color Selection
+                Rectangle {
+                   height: 30;
+                   width: parent.width - textDate.width - 10 
+                   color: "transparent"
+                   anchors.left: textDate.right                  
+                   anchors.leftMargin: 20
+                   Button {
+                       id: control
+                       property bool showColors: false
+                       property var buttonSelectedColor: find(colorModel, function(item) { return item.key === 0 }).col
+                       background: Rectangle {
+                           implicitWidth: 30
+                           implicitHeight: 30
+                           opacity: enabled ? 1 : 0.3
+                           color: control.buttonSelectedColor
+                           radius: 15
                        }
-                     onClicked: {
-                       cal.visible=true
+                       onClicked: showColors = !showColors
+                   }
+
+                   ListView {
+                       id: listColors
+                       model: colorModel 
+                       anchors.left: control.right
+                       anchors.right: parent.right
+                       anchors.leftMargin: 10
+                       height: 30
+                       orientation: ListView.Horizontal
+                       visible: control.showColors
+                       spacing: 10
+
+                       delegate: Item {
+                           id: delegateItem
+                           width: 30 
+                           height: 30
+
+                           Rectangle {
+                               anchors.fill: parent
+                               radius: 15
+                               color: col 
+                           }
+
+                           MouseArea {
+                              anchors.fill: parent
+                              onClicked: {
+                                  newTaskDialog.selectedColor = key;
+                                  control.buttonSelectedColor = find(colorModel, function(item) { return item.key === key }).col;
+                                  control.showColors = false
+                              }
+                           }
+                       }
+
+        
+                   } // end listColors
+                 } // end color selection
+
+                 TextField {
+                     id: textDate
+                     width: 175
+                     anchors.verticalCenter: parent.verticalCenter
+                     color: "white"
+                     font.pointSize: 10
+                     readOnly: true
+                     background: Rectangle { color: "#232323"; border.width: 1;  border.color: "darkgrey" }
+                     //text:Qt.formatDate(cal.selectedDate, "dd-MM-yyyy")
+                     Button {
+                         id: button
+                         height: textDate.height
+                         width: 75
+                         anchors.right: textDate.right
+                         anchors.verticalCenter: textDate.verticalCenter
+                         background: Rectangle { color: "#7d8591"; border.width: 1;  border.color: "darkgrey" }
+                         Text {
+                           anchors.fill: parent
+                           horizontalAlignment: Text.AlignHCenter
+                           verticalAlignment: Text.AlignVCenter
+                           font.pixelSize: 10
+                           text: "DUE DATE"
+                           font.bold: true
+                           }
+                         onClicked: {
+                           cal.visible = true
+                         }
                      }
                  }
-             }
-            }
-          }
+                }
+
+          } // end topColumn
 
           // Note Label
           Rectangle  {
@@ -1111,7 +1221,7 @@ ApplicationWindow {
                   font.bold: true
                   }
                 onClicked: {
-                  root.itemDataChange(newTaskDialog.startArgument, newTaskDialog.itemIndex, taskNameField.text, noteText.text, textDate.text);
+                  root.itemDataChange(newTaskDialog.startArgument, newTaskDialog.itemIndex, taskNameField.text, noteText.text, textDate.text, newTaskDialog.selectedColor);
                   newTaskDialog.close()
                  }
               }
