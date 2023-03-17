@@ -17,7 +17,7 @@ ApplicationWindow {
     visibility: "Maximized"
     flags: Qt.Window
 
-    signal itemDataChange(var runArgs, var itemIndex, var title, var description, var deadline, var col);
+    signal itemDataChange(var runArgs, var itemIndex, var title, var description, var deadline, var col, var isReady);
     signal itemDelete(var itemIndex);
 
     ListModel {
@@ -37,13 +37,13 @@ ApplicationWindow {
 
     onItemDataChange: {
         if(runArgs == 0) {
-            kanbanBoardModelTodo.addData(title, description, deadline, col)
+            kanbanBoardModelTodo.addData(title, description, deadline, col, isReady)
         }
         else if(runArgs == 1) {
-            kanbanBoardModelTodo.changeData(itemIndex, title, description, deadline, col);
-            kanbanBoardModelReady.changeData(itemIndex, title, description, deadline, col);
-            kanbanBoardModelDoing.changeData(itemIndex, title, description, deadline, col);
-            kanbanBoardModelDone.changeData(itemIndex, title, description, deadline, col);
+            kanbanBoardModelTodo.changeData(itemIndex, title, description, deadline, col, isReady);
+            kanbanBoardModelReady.changeData(itemIndex, title, description, deadline, col, isReady);
+            kanbanBoardModelDoing.changeData(itemIndex, title, description, deadline, col, isReady);
+            kanbanBoardModelDone.changeData(itemIndex, title, description, deadline, col, isReady);
         }
     }
 
@@ -111,6 +111,7 @@ ApplicationWindow {
                     newTaskDialog.descriptionText = ""
                     newTaskDialog.dueDateText = ""
                     newTaskDialog.selectedColor = 0
+                    newTaskDialog.isReady = false
                     newTaskDialog.runDialog(0, 0)
                 }
             }
@@ -379,6 +380,7 @@ ApplicationWindow {
                                 newTaskDialog.descriptionText = description
                                 newTaskDialog.dueDateText = deadline
                                 newTaskDialog.selectedColor = mycolor
+                                newTaskDialog.isReady = isReady
                                 newTaskDialog.runDialog(1, kanbanBoardModelTodo.getOriginalIndex(index))
                             }
 
@@ -425,6 +427,7 @@ ApplicationWindow {
                 }
             }
         }
+        //
         // ---------------------------------------------------------------------------------------------
 
         // ready-column
@@ -448,7 +451,7 @@ ApplicationWindow {
 
             Text {
                 id: readyText
-                text: "Ready"
+                text: "Specify"
                 anchors.top: readyColumn.top
                 anchors.left: readyColumn.left
                 anchors.topMargin: 10
@@ -516,7 +519,6 @@ ApplicationWindow {
                                 color: find(colorModel, function(item) { return item.key === mycolor }).col
                                 width: parent.width / 4
                             }
-
                         }
 
                         Rectangle {
@@ -547,6 +549,15 @@ ApplicationWindow {
                                 anchors.rightMargin: 10
                                 anchors.bottomMargin: 5
                             }
+                            Image {
+                                anchors.right: parent.right
+                                anchors.top: parent.top
+                                anchors.topMargin: 5
+                                anchors.rightMargin: 10
+                                width: 15
+                                height: 15
+                                source: isReady ? "icons/success.png" : "icons/processing.png"
+                            }
                         }
                         MouseArea {
                             id: mouseAreaReady
@@ -558,6 +569,7 @@ ApplicationWindow {
                                 newTaskDialog.descriptionText = description
                                 newTaskDialog.dueDateText = deadline
                                 newTaskDialog.selectedColor = mycolor
+                                newTaskDialog.isReady = isReady
                                 newTaskDialog.runDialog(1, kanbanBoardModelReady.getOriginalIndex(index))
                             }
 
@@ -725,6 +737,15 @@ ApplicationWindow {
                                 anchors.rightMargin: 10
                                 anchors.bottomMargin: 5
                             }
+                            Image {
+                                anchors.right: parent.right
+                                anchors.top: parent.top
+                                anchors.topMargin: 5
+                                anchors.rightMargin: 10
+                                width: 15
+                                height: 15
+                                source: isReady ? "icons/success.png" : "icons/processing.png"
+                            }
                         }
                         MouseArea {
                             id: mouseAreaDoing
@@ -736,9 +757,9 @@ ApplicationWindow {
                                 newTaskDialog.descriptionText = description
                                 newTaskDialog.dueDateText = deadline
                                 newTaskDialog.selectedColor = mycolor
+                                newTaskDialog.isReady = isReady
                                 newTaskDialog.runDialog(1, kanbanBoardModelDoing.getOriginalIndex(index))
                             }
-
 
                             drag.onActiveChanged: {
                                 if (mouseAreaDoing.drag.active) {
@@ -916,6 +937,7 @@ ApplicationWindow {
                                 newTaskDialog.descriptionText = description
                                 newTaskDialog.dueDateText = deadline
                                 newTaskDialog.selectedColor = mycolor
+                                newTaskDialog.isReady = isReady
                                 newTaskDialog.runDialog(1, kanbanBoardModelDone.getOriginalIndex(index))
                             }
 
@@ -961,11 +983,14 @@ ApplicationWindow {
 
             }
         }
+
+        //
         // --------------------------------------------------------------------------------------------------
         //
         //                                      ADD NEW DIALOG
         //
         // --------------------------------------------------------------------------------------------------
+        //
 
         Dialog {
             id: newTaskDialog
@@ -981,6 +1006,7 @@ ApplicationWindow {
 
             property int startArgument: -1
             property int itemIndex: -1
+            property bool isReady: false
 
             function runDialog(arg: int, itemIndex: int) {
                 newTaskDialog.startArgument = arg;
@@ -1121,10 +1147,20 @@ ApplicationWindow {
                                         }
                                     }
                                 }
-
-
                             } // end listColors
                         } // end color selection
+
+                        Image {
+                            id: readySetting
+                            source: newTaskDialog.isReady ? "icons/success.png" : "icons/processing.png"
+                            anchors.right: parent.right
+                            height: 30;
+                            width: 30
+                            MouseArea {
+                              anchors.fill: parent
+                              onClicked: newTaskDialog.isReady = !newTaskDialog.isReady
+                            }
+                        }
 
                         TextField {
                             id: textDate
@@ -1134,7 +1170,6 @@ ApplicationWindow {
                             font.pointSize: 10
                             readOnly: true
                             background: Rectangle { color: "#232323"; border.width: 1;  border.color: "darkgrey" }
-                            //text:Qt.formatDate(cal.selectedDate, "dd-MM-yyyy")
                             Button {
                                 id: button
                                 height: textDate.height
@@ -1156,7 +1191,6 @@ ApplicationWindow {
                             }
                         }
                     }
-
                 } // end topColumn
 
                 // Note Label
@@ -1222,7 +1256,7 @@ ApplicationWindow {
                                 font.bold: true
                             }
                             onClicked: {
-                                root.itemDataChange(newTaskDialog.startArgument, newTaskDialog.itemIndex, taskNameField.text, noteText.text, textDate.text, newTaskDialog.selectedColor);
+                                root.itemDataChange(newTaskDialog.startArgument, newTaskDialog.itemIndex, taskNameField.text, noteText.text, textDate.text, newTaskDialog.selectedColor, newTaskDialog.isReady);
                                 newTaskDialog.close()
                             }
                         }

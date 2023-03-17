@@ -10,6 +10,7 @@ class KanbanBoardModel(QAbstractListModel):
     DescriptionRole = Qt.UserRole + 2
     DeadlineRole = Qt.UserRole + 3
     ColorRole = Qt.UserRole + 4
+    IsReadyRole = Qt.UserRole + 5
 
     def __init__(self, board_handler, status: int, parent=None):
         super(KanbanBoardModel, self).__init__(parent)
@@ -29,6 +30,8 @@ class KanbanBoardModel(QAbstractListModel):
              return self.kanban_board[row].deadline
          if role == KanbanBoardModel.ColorRole:
              return self.kanban_board[row].color
+         if role == KanbanBoardModel.IsReadyRole:
+             return self.kanban_board[row].isReady
     
     def rowCount(self, parent=QModelIndex()):
         return sum(1 for d in self.kanban_board if d.status == self.status)
@@ -38,7 +41,8 @@ class KanbanBoardModel(QAbstractListModel):
             KanbanBoardModel.TitleRole: b'title',
             KanbanBoardModel.DescriptionRole: b'description',
             KanbanBoardModel.DeadlineRole: b'deadline',
-            KanbanBoardModel.ColorRole: b'mycolor'
+            KanbanBoardModel.ColorRole: b'mycolor',
+            KanbanBoardModel.IsReadyRole: b'isReady'
         }
      
     @pyqtSlot(int, bool)
@@ -66,14 +70,14 @@ class KanbanBoardModel(QAbstractListModel):
         self.resetModel()
         return 1 
 
-    @pyqtSlot(str, str, str, int)
-    def addData(self, title, description, deadline, color):
-        entity = kanaban_entity.KanabanEntity(title, description, deadline, self.status, color) 
+    @pyqtSlot(str, str, str, int, bool)
+    def addData(self, title, description, deadline, color, isReady):
+        entity = kanaban_entity.KanabanEntity(title, description, deadline, self.status, color, isReady) 
         self.original_data.insert(0, entity)
         self.resetModel()
     
-    @pyqtSlot(int, str, str, str, int)
-    def changeData(self, original_index, title, description, deadline, color):
+    @pyqtSlot(int, str, str, str, int, bool)
+    def changeData(self, original_index, title, description, deadline, color, isReady):
         item = self.original_data[original_index]
         containing = [x for x in self.kanban_board if id(x) == id(item)]
         if len(containing) == 0:
@@ -83,6 +87,7 @@ class KanbanBoardModel(QAbstractListModel):
         item.description = description
         item.deadline = deadline
         item.color = color
+        item.isReady = isReady
         self.resetModel()
 
     @pyqtSlot(result=int)
