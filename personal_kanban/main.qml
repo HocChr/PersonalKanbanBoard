@@ -552,7 +552,7 @@ ApplicationWindow {
                             Image {
                                 anchors.right: parent.right
                                 anchors.top: parent.top
-                                anchors.topMargin: 5
+                                anchors.topMargin: 8
                                 anchors.rightMargin: 10
                                 width: 15
                                 height: 15
@@ -740,7 +740,7 @@ ApplicationWindow {
                             Image {
                                 anchors.right: parent.right
                                 anchors.top: parent.top
-                                anchors.topMargin: 5
+                                anchors.topMargin: 8
                                 anchors.rightMargin: 10
                                 width: 15
                                 height: 15

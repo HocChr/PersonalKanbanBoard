@@ -96,6 +96,8 @@ class KanbanBoardModel(QAbstractListModel):
 
     @pyqtSlot(int, int)
     def setStatus(self, row: int, status: int):
+        if self.kanban_board[row].status != status:
+            self.kanban_board[row].isReady = False
         self.kanban_board[row].status = status
 
     @pyqtSlot()
