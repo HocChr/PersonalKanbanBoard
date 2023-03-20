@@ -13,6 +13,8 @@ ApplicationWindow {
     id: root
 
     property int boardIndex: 0
+    property bool filterColor: false
+    property int filterSelectedColor: 0
 
     visibility: "Maximized"
     flags: Qt.Window
@@ -22,12 +24,12 @@ ApplicationWindow {
 
     ListModel {
         id: colorModel
-        ListElement { name: "white"; col: "white"; key: 0 }
-        ListElement { name: "black"; col: "black"; key: 1 }
-        ListElement { name: "red"; col: "#ff5252"; key: 2  }
-        ListElement { name: "blue"; col: "#5252ff"; key: 3  }
-        ListElement { name: "green"; col: "#60ff52"; key: 4  }
-        ListElement { name: "yellow"; col: "#fcff52"; key: 5  }
+        ListElement { name: "white"; col: "white"; key: 0; }
+        ListElement { name: "black"; col: "black"; key: 1; }
+        ListElement { name: "red"; col: "#ff5252"; key: 2; }
+        ListElement { name: "blue"; col: "#5252ff"; key: 3; }
+        ListElement { name: "green"; col: "#60ff52"; key: 4; }
+        ListElement { name: "yellow"; col: "#fcff52"; key: 5; }
     }
 
     function find(model, criteria) {
@@ -112,6 +114,7 @@ ApplicationWindow {
                     newTaskDialog.dueDateText = ""
                     newTaskDialog.selectedColor = 0
                     newTaskDialog.isReady = false
+                    newTaskDialog.selectedColor = root.filterSelectedColor
                     newTaskDialog.runDialog(0, 0)
                 }
             }
@@ -121,7 +124,7 @@ ApplicationWindow {
                 anchors.top: buttonAddTask.bottom
                 anchors.left: toolbar.left
                 anchors.right: toolbar.right
-                anchors.topMargin: 25
+                anchors.topMargin: 15
                 anchors.leftMargin: 15
                 anchors.rightMargin: 15
                 height: 40
@@ -202,7 +205,7 @@ ApplicationWindow {
                 anchors.top: operationalButton.bottom
                 anchors.left: toolbar.left
                 anchors.right: toolbar.right
-                anchors.topMargin: 15
+                anchors.topMargin: 5
                 anchors.leftMargin: 15
                 anchors.rightMargin: 15
                 height: 40
@@ -221,6 +224,102 @@ ApplicationWindow {
                     root.title = "ANNUAL"
                     root.boardIndex = 4
                 }
+            }
+
+            Button {
+                id: colorFilterButton
+                anchors.left: toolbar.left
+                anchors.right: toolbar.right
+                anchors.top: aaiButton.bottom
+                anchors.leftMargin: 15
+                anchors.rightMargin: 15
+                anchors.topMargin: 15
+                height: 40
+                background: Rectangle { 
+                    color: root.filterColor ? find(colorModel, function(item) { return item.key === root.filterSelectedColor }).col : "transparent";
+                    border.width: 2;
+                    border.color: "darkgrey";
+                    radius: 3; 
+                }
+                Text {
+                    anchors.fill: parent
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 12
+                    color: "#FFFFFF"
+                    text: root.filterColor? "" : "FILTER" 
+                    font.bold: true
+                }
+
+                onClicked: {
+                    if (root.filterColor) {
+                        root.filterColor = false;
+                        globalColorSelectionRect.showColors = false;
+                        kanbanBoardModelTodo.unFilter()
+                        kanbanBoardModelReady.unFilter()
+                        kanbanBoardModelDoing.unFilter()
+                        kanbanBoardModelDone.unFilter()
+                    }
+                    else {
+                        globalColorSelectionRect.showColors = !globalColorSelectionRect.showColors;
+                    }
+                }
+                //
+                // Color Selection
+                Rectangle {
+                    id: globalColorSelectionRect
+                    height: 300;
+                    anchors.left: colorFilterButton.left
+                    anchors.right: colorFilterButton.right
+                    radius: 3
+                    color: "transparent"
+                    anchors.top: colorFilterButton.bottom
+                    anchors.topMargin: 5
+                    property bool showColors: false 
+
+                    ListView {
+                        model: colorModel
+                        anchors.fill: globalColorSelectionRect
+                        visible: globalColorSelectionRect.showColors
+                        spacing: 5
+
+                        delegate: Item {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: 40
+
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: 3
+                                color: col
+                                border.width: 2
+                                border.color: "darkgrey"
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    globalColorSelectionRect.showColors = false
+                                    root.filterColor = true
+                                    root.filterSelectedColor = key
+                                    kanbanBoardModelTodo.filter(key)
+                                    kanbanBoardModelReady.filter(key)
+                                    kanbanBoardModelDoing.filter(key)
+                                    kanbanBoardModelDone.filter(key)
+                                }
+                                onPressAndHold: {
+                                    globalColorSelectionRect.showColors = false
+                                    root.filterColor = true
+                                    root.filterSelectedColor = key
+                                    kanbanBoardModelTodo.outFilter(key)
+                                    kanbanBoardModelReady.outFilter(key)
+                                    kanbanBoardModelDoing.outFilter(key)
+                                    kanbanBoardModelDone.outFilter(key)
+                                }
+                            }
+                        }
+                    } // end listColors
+                } // end color selection
             }
 
             Button {

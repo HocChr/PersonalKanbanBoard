@@ -19,6 +19,8 @@ class KanbanBoardModel(QAbstractListModel):
         self.board_handler = board_handler
         self.original_data = board_handler.get_kanban_board(self.board_index).board
         self.kanban_board = [x for x in self.original_data if x.status == status]
+        self.filterColor = 0
+        self.filterState = 0
 
     def data(self, index, role=Qt.DisplayRole):
          row = index.row()
@@ -53,8 +55,26 @@ class KanbanBoardModel(QAbstractListModel):
         self.original_data = self.board_handler.get_kanban_board(self.board_index).board
         self.beginResetModel();
         self.kanban_board.clear();
-        self.kanban_board = [x for x in self.original_data if x.status == self.status]
+        self._filter();
         self.endResetModel();
+
+    @pyqtSlot()
+    def unFilter(self):
+        self.filterColor = 0
+        self.filterState = 0
+        self.resetModel(False)
+
+    @pyqtSlot(int)
+    def filter(self, color):
+        self.filterColor = color
+        self.filterState = 1
+        self.resetModel(False)
+
+    @pyqtSlot(int)
+    def outFilter(self, color):
+        self.filterColor = color
+        self.filterState = 2
+        self.resetModel(False)
 
     @pyqtSlot(result=int)
     def getBoardIndex(self):
@@ -101,12 +121,13 @@ class KanbanBoardModel(QAbstractListModel):
         self.kanban_board[row].status = status
 
     @pyqtSlot()
-    def resetModel(self):
+    def resetModel(self, save=True):
         self.beginResetModel();
         self.kanban_board.clear();
-        self.kanban_board = [x for x in self.original_data if x.status == self.status]
+        self._filter();
         self.endResetModel();
-        self.board_handler.save(self.board_index)
+        if save:
+            self.board_handler.save(self.board_index)
 
     @pyqtSlot(int, result=int)
     def getOriginalIndex(self, row: int):
@@ -146,3 +167,10 @@ class KanbanBoardModel(QAbstractListModel):
         else:
             lst.insert(pos2, item)
 
+    def _filter(self):
+        if self.filterState == 1:
+            self.kanban_board = [x for x in self.original_data if x.status == self.status and x.color == self.filterColor]
+        elif self.filterState == 2:
+            self.kanban_board = [x for x in self.original_data if x.status == self.status and not x.color == self.filterColor]
+        else:
+            self.kanban_board = [x for x in self.original_data if x.status == self.status] 
