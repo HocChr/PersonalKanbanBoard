@@ -2,6 +2,9 @@
 *.swp
 *.exe
 *.spec
+*.**~
+*.***~
+
 tags
 
 coordination.json
