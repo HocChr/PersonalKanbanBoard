@@ -20,6 +20,7 @@ ApplicationWindow {
     flags: Qt.Window
 
     signal itemDataChange(var runArgs, var itemIndex, var title, var description, var deadline, var col, var isReady);
+    signal internalItemDataChange(var itemIndex, var createdDate, var doneDate);
     signal itemDelete(var itemIndex);
 
     ListModel {
@@ -39,7 +40,8 @@ ApplicationWindow {
 
     onItemDataChange: {
         if(runArgs == 0) {
-            kanbanBoardModelTodo.addData(title, description, deadline, col, isReady)
+            //kanbanBoardModelTodo.addData(title, description, deadline, col, isReady)
+            kanbanBoardModelTodo.addData(title, description, deadline, col)
         }
         else if(runArgs == 1) {
             kanbanBoardModelTodo.changeData(itemIndex, title, description, deadline, col, isReady);
@@ -47,6 +49,16 @@ ApplicationWindow {
             kanbanBoardModelDoing.changeData(itemIndex, title, description, deadline, col, isReady);
             kanbanBoardModelDone.changeData(itemIndex, title, description, deadline, col, isReady);
         }
+    }
+
+    onInternalItemDataChange: {
+        newTaskDialog.createdDate = createdDate;
+        newTaskDialog.doneDate = doneDate;
+
+        kanbanBoardModelTodo.changeInternalData(itemIndex, createdDate, doneDate);
+        kanbanBoardModelReady.changeInternalData(itemIndex, createdDate, doneDate);
+        kanbanBoardModelDoing.changeInternalData(itemIndex, createdDate, doneDate);
+        kanbanBoardModelDone.changeInternalData(itemIndex, createdDate, doneDate);
     }
 
     onItemDelete: {
@@ -480,6 +492,8 @@ ApplicationWindow {
                                 newTaskDialog.dueDateText = deadline
                                 newTaskDialog.selectedColor = mycolor
                                 newTaskDialog.isReady = isReady
+                                newTaskDialog.createdDate = createdDate
+                                newTaskDialog.doneDate = doneDate
                                 newTaskDialog.runDialog(1, kanbanBoardModelTodo.getOriginalIndex(index))
                             }
 
@@ -669,6 +683,8 @@ ApplicationWindow {
                                 newTaskDialog.dueDateText = deadline
                                 newTaskDialog.selectedColor = mycolor
                                 newTaskDialog.isReady = isReady
+                                newTaskDialog.createdDate = createdDate
+                                newTaskDialog.doneDate = doneDate
                                 newTaskDialog.runDialog(1, kanbanBoardModelReady.getOriginalIndex(index))
                             }
 
@@ -857,6 +873,8 @@ ApplicationWindow {
                                 newTaskDialog.dueDateText = deadline
                                 newTaskDialog.selectedColor = mycolor
                                 newTaskDialog.isReady = isReady
+                                newTaskDialog.createdDate = createdDate
+                                newTaskDialog.doneDate = doneDate
                                 newTaskDialog.runDialog(1, kanbanBoardModelDoing.getOriginalIndex(index))
                             }
 
@@ -1037,6 +1055,8 @@ ApplicationWindow {
                                 newTaskDialog.dueDateText = deadline
                                 newTaskDialog.selectedColor = mycolor
                                 newTaskDialog.isReady = isReady
+                                newTaskDialog.createdDate = createdDate
+                                newTaskDialog.doneDate = doneDate
                                 newTaskDialog.runDialog(1, kanbanBoardModelDone.getOriginalIndex(index))
                             }
 
@@ -1107,6 +1127,10 @@ ApplicationWindow {
             property int itemIndex: -1
             property bool isReady: false
 
+            // internal date
+            property string createdDate: ""
+            property string doneDate: ""
+
             function runDialog(arg: int, itemIndex: int) {
                 newTaskDialog.startArgument = arg;
                 newTaskDialog.itemIndex = itemIndex
@@ -1121,7 +1145,8 @@ ApplicationWindow {
                 x: (parent.width - width) / 2
                 y: (parent.height - height) / 2
                 color: "#232323"
-                border.width: 0
+                border.width: 1
+                border.color: "darkgrey" 
 
                 ColumnLayout {
                     id: topColumn
@@ -1143,7 +1168,6 @@ ApplicationWindow {
                             anchors.left: parent.left
                             color: "white"
                             font.pointSize: 12
-
                         }
 
                         Button {
@@ -1194,6 +1218,7 @@ ApplicationWindow {
                         height: 30;
                         width: parent.width
                         color: "transparent"
+                        
                         // Color Selection
                         Rectangle {
                             height: 30;
@@ -1377,6 +1402,15 @@ ApplicationWindow {
                             onClicked: {
                                 newTaskDialog.close();
                             }
+
+                            onPressAndHold: {
+                                if(newTaskDialog.startArgument == 1) {
+                                    statisticsDialog.itemIndex = newTaskDialog.itemIndex;
+                                    statisticsDialog.createdDateText = newTaskDialog.createdDate;
+                                    statisticsDialog.doneDateText = newTaskDialog.doneDate;
+                                    statisticsDialog.open();
+                                }
+                            }
                         }
                     }
                 }
@@ -1398,6 +1432,214 @@ ApplicationWindow {
             }
         }
         //  ---------------------------- End Edit Dialog ------------------------------------------------
+
+        //
+        // --------------------------------------------------------------------------------------------------
+        //
+        //                                      EDIT STATISTICS DIALOG
+        //
+        // --------------------------------------------------------------------------------------------------
+        //
+
+        Dialog {
+            id: statisticsDialog
+            height: 300
+            width: 400
+            x: (parent.width - width) / 2
+            y: (parent.height - height) / 2
+
+            property alias createdDateText: createdDate.text 
+            property alias doneDateText: doneDate.text 
+            property int itemIndex: -1
+
+            Rectangle {
+                id: statisticsRect
+                height: statisticsDialog.height
+                width: statisticsDialog.width
+                x: (parent.width - width) / 2
+                y: (parent.height - height) / 2
+                color: "#232323"
+                border.width: 1
+                border.color: "darkgrey" 
+
+                ColumnLayout {
+                    id: topColumnStat
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.margins: 30
+                    spacing: 20
+
+                    // Header
+                    Rectangle  {
+                        height: 50;
+                        width: parent.width
+                        color: "transparent"
+
+                        Label {
+                            text: "Task Dates"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            color: "white"
+                            font.pointSize: 12
+                        }
+                    }
+                  
+                    // Created Date
+                    Rectangle  {
+                        height: 30;
+                        width: parent.width
+                        color: "transparent"
+
+                        TextField {
+                            id: createdDate 
+                            width: 200
+                            anchors.verticalCenter: parent.verticalCenter
+                            color: "white"
+                            font.pointSize: 10
+                            readOnly: true
+                            background: Rectangle { color: "#232323"; border.width: 1;  border.color: "darkgrey" }
+                            Button {
+                                height: createdDate.height
+                                width: 100
+                                anchors.right: createdDate.right
+                                anchors.verticalCenter: createdDate.verticalCenter
+                                background: Rectangle { color: "#7d8591"; border.width: 1;  border.color: "darkgrey" }
+                                Text {
+                                    anchors.fill: parent
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    font.pixelSize: 10
+                                    text: "CREATED DATE"
+                                    font.bold: true
+                                }
+                                onClicked: {
+                                    statisticsDateCalendar.runStatisticsCalendar("created")
+                                }
+                            }
+                        }
+                    }
+
+                    // Done Date
+                    Rectangle  {
+                        height: 30;
+                        width: parent.width
+                        color: "transparent"
+
+                        TextField {
+                            id: doneDate 
+                            width: 200
+                            anchors.verticalCenter: parent.verticalCenter
+                            color: "white"
+                            font.pointSize: 10
+                            readOnly: true
+                            background: Rectangle { color: "#232323"; border.width: 1;  border.color: "darkgrey" }
+                            Button {
+                                height: doneDate.height
+                                width: 100
+                                anchors.right: doneDate.right
+                                anchors.verticalCenter: doneDate.verticalCenter
+                                background: Rectangle { color: "#7d8591"; border.width: 1;  border.color: "darkgrey" }
+                                Text {
+                                    anchors.fill: parent
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    font.pixelSize: 10
+                                    text: "DONE DATE"
+                                    font.bold: true
+                                }
+                                onClicked: {
+                                    statisticsDateCalendar.runStatisticsCalendar("done")
+                                }
+                            }
+                        }
+                    }
+                }
+
+                QQC1.Calendar {
+                    id: statisticsDateCalendar
+                    anchors.horizontalCenter: statisticsDialog.horizontalCenter
+                    anchors.verticalCenter: statisticsDialog.verticalCenter
+                    width: 220
+                    height: 205
+                    visible: false
+                    selectedDate: new Date()
+                    property var dateType : "" 
+
+                    function runStatisticsCalendar(dateType) {
+                        statisticsDateCalendar.dateType = dateType;
+                        statisticsDateCalendar.visible = true;
+                    }            
+
+                    onClicked:  {
+                        var selectedDateString = Qt.formatDate(statisticsDateCalendar.selectedDate, "dd/MM/yyyy");
+
+                        if(statisticsDateCalendar.dateType == "created") {
+                            createdDate.text = selectedDateString;
+                        }
+                        else if(statisticsDateCalendar.dateType == "done") {
+                            doneDate.text = selectedDateString;
+                        }
+                        statisticsDateCalendar.visible=false
+                    }
+                }
+
+                Rectangle {
+                    id: buttonBarStat
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.margins: 30
+                    height: 40
+                    color: "transparent"
+
+                    Row {
+                        spacing: 10
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        Button {
+                            id: buttonSaveStat
+                            height: 25// textDate.height
+                            width: 66
+                            background: Rectangle { color: "transparent"; border.width: 1; border.color: "firebrick"; radius: 3; }
+                            Text {
+                                anchors.fill: parent
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                font.pixelSize: 10
+                                color: "firebrick"
+                                text: "SAVE"
+                                font.bold: true
+                            }
+                            onClicked: {
+                                root.internalItemDataChange(statisticsDialog.itemIndex, statisticsDialog.createdDateText, statisticsDialog.doneDateText)
+                                statisticsDialog.close()
+                            }
+                        }
+                        Button {
+                            id: buttonCancelStat
+                            height: 25// textDate.height
+                            width: 66
+                            background: Rectangle { color: "transparent"; border.width: 1; border.color: "darkgrey"; radius: 3; }
+                            Text {
+                                anchors.fill: parent
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                font.pixelSize: 10
+                                color: "#FFFFFF"
+                                text: "CANCEL"
+                                font.bold: true
+                            }
+
+                            onClicked: {
+                                statisticsDialog.close();
+                            }
+                        }
+                    }
+                }
+              }
+        }
+
+        //  ---------------------------- End Statistics Dialog ------------------------------------------------
 
         // --- Drag item with highes z-Layer to reparent the drag item to it (to ensure the drag item stays on top)
         Item {

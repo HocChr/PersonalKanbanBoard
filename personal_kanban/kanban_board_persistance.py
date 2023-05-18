@@ -41,6 +41,7 @@ class KanbanBoardHandler:
                                                         it.status,
                                                         it.color,
                                                         it.isReady,
+                                                        it.creation_date,
                                                         it.done_date)
                   self._kanban_board.append_entity(entity)
 

@@ -70,13 +70,20 @@ class MainWindow(QtWidgets.QMainWindow):
         start_date = self.start.toPython()
         end_date = self.end.toPython()
         today = date.today()
-        delta =  timedelta(days=5)
+        delta =  timedelta(days=1)
 
         not_dones = []
         while start_date <= end_date:
+        # this is not efficient: every delta you walk over the whole list again
+        # instead: you could order the list by date and then walk once over the list
             start_date += delta
+
+            created_ones = []
+            created_ones = [x for x in self.kanban_board.board if 
+                datetime.datetime.strptime(x.creation_date, '%d/%m/%Y').date() <= start_date]
+
             not_dones = []
-            not_dones = [x for x in self.kanban_board.board if x.status != 3 or
+            not_dones = [x for x in created_ones if x.status != 3 or
                                      datetime.datetime.strptime(x.done_date, '%d/%m/%Y').date() > start_date]
             qtDateTimeTmp = QtCore.QDateTime(start_date)
             self.seriesNoDones.append(float(qtDateTimeTmp.toMSecsSinceEpoch()), len(not_dones))
