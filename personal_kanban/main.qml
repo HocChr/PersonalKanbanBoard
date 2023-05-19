@@ -335,6 +335,31 @@ ApplicationWindow {
             }
 
             Button {
+                id: startBurndownButton
+                anchors.left: toolbar.left
+                anchors.right: toolbar.right
+                anchors.bottom: closeAppButton.top 
+                anchors.leftMargin: 15
+                anchors.rightMargin: 15
+                anchors.bottomMargin: 15
+                height: 40
+                background: Rectangle { color: "transparent"; border.width: 2; border.color: "darkgrey"; radius: 3; }
+                Text {
+                    anchors.fill: parent
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 12
+                    color: "darkgrey"
+                    text: "CHART"
+                    font.bold: true
+                }
+
+                onClicked: {
+                    burndown.runChart();
+                }
+            }
+
+            Button {
                 id: closeAppButton
                 anchors.left: toolbar.left
                 anchors.right: toolbar.right

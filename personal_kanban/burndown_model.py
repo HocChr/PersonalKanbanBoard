@@ -91,7 +91,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     import sys
-
+    print("Hello")
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindow(1)
     window.resize(640, 480)

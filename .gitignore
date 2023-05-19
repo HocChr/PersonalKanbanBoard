@@ -13,4 +13,5 @@ strategic.json
 
 */__pycache__/
 */build/
+build/
 */dist/

@@ -205,3 +205,4 @@ class KanbanBoardModel(QAbstractListModel):
             self.kanban_board = [x for x in self.original_data if x.status == self.status and not x.color == self.filterColor]
         else:
             self.kanban_board = [x for x in self.original_data if x.status == self.status] 
+
