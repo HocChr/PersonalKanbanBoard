@@ -1637,6 +1637,7 @@ ApplicationWindow {
                             }
                             onClicked: {
                                 root.internalItemDataChange(statisticsDialog.itemIndex, statisticsDialog.createdDateText, statisticsDialog.doneDateText)
+                                statisticsDateCalendar.visible=false
                                 statisticsDialog.close()
                             }
                         }
@@ -1656,6 +1657,7 @@ ApplicationWindow {
                             }
 
                             onClicked: {
+                                statisticsDateCalendar.visible=false
                                 statisticsDialog.close();
                             }
                         }

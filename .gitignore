@@ -10,7 +10,7 @@ tags
 coordination.json
 operational.json
 strategic.json
-
+tmp.json
 */__pycache__/
 */build/
 build/

@@ -7,12 +7,10 @@ from datetime import date, timedelta
 import kanban_board_persistance
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, board_index: int):
+    def __init__(self):
         super(MainWindow, self).__init__()
         
-        self.board_index = board_index
-        self.kanban_persistance = kanban_board_persistance.KanbanBoardHandler()
-        self.kanban_board = self.kanban_persistance.get_kanban_board(1, True) 
+        self.kanban_board = kanban_board_persistance.read_selection_from_file() 
 
         self.start = QtCore.QDate(2023, 4, 1)
         self.end = QtCore.QDate(2023, 6, 30)
@@ -93,7 +91,7 @@ if __name__ == "__main__":
     import sys
     print("Hello")
     app = QtWidgets.QApplication(sys.argv)
-    window = MainWindow(1)
+    window = MainWindow()
     window.resize(640, 480)
     window.show()
     sys.exit(app.exec_())
