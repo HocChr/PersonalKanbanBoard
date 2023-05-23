@@ -90,6 +90,7 @@ ApplicationWindow {
             id: background
             anchors.fill: parent
             color: Qt.rgba(0.1, 0.1, 0.1, 1)
+            Image { source: "images/background.jpg"; anchors.fill: parent; }
         }
         
         Rectangle {
@@ -98,6 +99,7 @@ ApplicationWindow {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             color: "#222222"
+            opacity: 0.7
             width: 150
 
             Button {
@@ -391,18 +393,20 @@ ApplicationWindow {
         Rectangle {
             id: todoColumn
             anchors.top: parent.top
-            anchors.bottom: parent.bottom
             anchors.left: toolbar.right
             anchors.topMargin: 15
             anchors.leftMargin: 15
             anchors.bottomMargin: 15
+            opacity: 0.9
             gradient: QQ215.Gradient {
                 orientation: Gradient.Horizontal
                 GradientStop { position: 0.0; color: "#1e1f21" }
                 GradientStop { position: 1.0; color: "#222326" }
             }
+
             width: (parent.width - toolbar.width) / 4 - 15
-            radius: 15
+            height: listTodos.height + todoText.height + 40
+            radius: 5
 
             Text {
                 id: todoText
@@ -414,6 +418,7 @@ ApplicationWindow {
                 height: 18
                 font.pointSize: 12
                 color: Qt.rgba(0.5, 0.5, 0.5, 1)
+
             }
 
             DropArea {
@@ -431,13 +436,14 @@ ApplicationWindow {
                 id: listTodos
                 anchors.top: todoText.bottom
                 anchors.left: todoColumn.left
-                anchors.bottom: todoColumn.bottom
                 anchors.right: todoColumn.right
                 anchors.topMargin: 10
                 anchors.leftMargin: 10
-                anchors.bottomMargin: 10
                 anchors.rightMargin: 10
                 spacing: 10
+                height: Math.min(listTodos.count * (80 + 10), root.height - 90)
+                clip: true
+
                 model: kanbanBoardModelTodo
 
                 property Item dragParent: dragContainerTodo
@@ -445,16 +451,19 @@ ApplicationWindow {
                 delegate: Item {
                     id: delegateItem
                     width: listTodos.width
-                    height: 60
+                    height: 80
+
                     Rectangle {
                         id: dragRectTodo
                         gradient: QQ215.Gradient {
                             orientation: Gradient.Horizontal
                             GradientStop { position: 0.0; color: "#343437" }
-                            GradientStop { position: 1.0; color: "#3d3d40" }
+                            GradientStop { position: 1.0; color: "#222222" }
                         }
-                        height: 60
+                        height: 80
                         width: listTodos.width
+                        radius: 5
+                        opacity: 0.9
 
                         property int dragItemIndex: index
 
@@ -487,17 +496,18 @@ ApplicationWindow {
                             Text {
                                 text: title
                                 color: "white"
-                                font.pixelSize: 12
+                                font.pixelSize: 16
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left
                                 anchors.leftMargin: 10
-                                anchors.right: parent.right
+                                width: parent.width * 0.8
                                 elide: Text.ElideRight
+                                wrapMode: Text.WordWrap
                             }
                             Text {
                                 text: deadline
-                                color: "firebrick"
-                                font.pixelSize: 12
+                                color: "#ff5252"
+                                font.pixelSize: 16
                                 enabled: deadline.length > 0
                                 anchors.right: parent.right
                                 anchors.bottom: parent.bottom
@@ -574,18 +584,19 @@ ApplicationWindow {
         Rectangle {
             id: readyColumn
             anchors.top: parent.top
-            anchors.bottom: parent.bottom
             anchors.left: todoColumn.right
             anchors.topMargin: 15
             anchors.leftMargin: 15
             anchors.bottomMargin: 15
+            opacity: 0.9
             gradient: QQ215.Gradient {
                 orientation: Gradient.Horizontal
                 GradientStop { position: 0.0; color: "#1e1f21" }
                 GradientStop { position: 1.0; color: "#222326" }
             }
             width: (parent.width - toolbar.width) / 4 - 15
-            radius: 15
+            height: listReadys.height + readyText.height + 40
+            radius: 5
 
             Text {
                 id: readyText
@@ -614,31 +625,33 @@ ApplicationWindow {
                 id: listReadys
                 anchors.top: readyText.bottom
                 anchors.left: readyColumn.left
-                anchors.bottom: readyColumn.bottom
                 anchors.right: readyColumn.right
                 anchors.topMargin: 10
                 anchors.leftMargin: 10
-                anchors.bottomMargin: 10
                 anchors.rightMargin: 10
                 spacing: 10
                 model: kanbanBoardModelReady
+                height: Math.min(listReadys.count * (80 + 10), root.height - 90)
+                clip: true
 
                 property Item dragParent: dragContainerReady
 
                 delegate:Item {
                     id: delegateItem
                     width:listReadys.width
-                    height: 60
+                    height: 80
 
                     Rectangle {
                         id: dragRectReady
                         gradient: QQ215.Gradient {
                             orientation: Gradient.Horizontal
                             GradientStop { position: 0.0; color: "#343437" }
-                            GradientStop { position: 1.0; color: "#3d3d40" }
+                            GradientStop { position: 1.0; color: "#222222" }
                         }
-                        height: 60
+                        height: 80
                         width: listReadys.width
+                        radius: 5
+                        opacity: 0.9
 
                         property int dragItemIndex: index
 
@@ -670,17 +683,18 @@ ApplicationWindow {
                             Text {
                                 text: title
                                 color: "white"
-                                font.pixelSize: 12
+                                font.pixelSize: 16
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left
                                 anchors.leftMargin: 10
-                                anchors.right: parent.right
+                                width: parent.width * 0.8
                                 elide: Text.ElideRight
+                                wrapMode: Text.WordWrap
                             }
                             Text {
                                 text: deadline
-                                color: "firebrick"
-                                font.pixelSize: 12
+                                color: "#ff5252"
+                                font.pixelSize: 16
                                 enabled: deadline.length > 0
                                 anchors.right: parent.right
                                 anchors.bottom: parent.bottom
@@ -692,8 +706,8 @@ ApplicationWindow {
                                 anchors.top: parent.top
                                 anchors.topMargin: 8
                                 anchors.rightMargin: 10
-                                width: 15
-                                height: 15
+                                width: 18
+                                height: 18
                                 source: isReady ? "icons/success.png" : "icons/processing.png"
                             }
                         }
@@ -763,18 +777,19 @@ ApplicationWindow {
         Rectangle {
             id: doingColumn
             anchors.top: parent.top
-            anchors.bottom: parent.bottom
             anchors.left: readyColumn.right
             anchors.topMargin: 15
             anchors.leftMargin: 15
             anchors.bottomMargin: 15
+            opacity: 0.9
             gradient: QQ215.Gradient {
                 orientation: Gradient.Horizontal
                 GradientStop { position: 0.0; color: "#1e1f21" }
                 GradientStop { position: 1.0; color: "#222326" }
             }
             width: (parent.width - toolbar.width) / 4 - 15
-            radius: 15
+            height: listDoings.height + doingText.height + 40
+            radius: 5
 
             Text {
                 id: doingText
@@ -803,31 +818,33 @@ ApplicationWindow {
                 id: listDoings
                 anchors.top: doingText.bottom
                 anchors.left: doingColumn.left
-                anchors.bottom: doingColumn.bottom
                 anchors.right: doingColumn.right
                 anchors.topMargin: 10
                 anchors.leftMargin: 10
-                anchors.bottomMargin: 10
                 anchors.rightMargin: 10
                 spacing: 10
                 model: kanbanBoardModelDoing
+                height: Math.min(listDoings.count * (80 + 10), root.height - 90)
+                clip: true
 
                 property Item dragParent: dragContainerDoing
 
                 delegate:Item {
                     id: delegateItem
                     width:listDoings.width
-                    height: 60
+                    height: 80
 
                     Rectangle {
                         id: dragRectDoing
                         gradient: QQ215.Gradient {
                             orientation: Gradient.Horizontal
                             GradientStop { position: 0.0; color: "#343437" }
-                            GradientStop { position: 1.0; color: "#3d3d40" }
+                            GradientStop { position: 1.0; color: "#222222" }
                         }
-                        height: 60
+                        height: 80
                         width: listDoings.width
+                        radius: 5
+                        opacity: 0.9
 
                         property int dragItemIndex: index
 
@@ -860,17 +877,18 @@ ApplicationWindow {
                             Text {
                                 text: title
                                 color: "white"
-                                font.pixelSize: 12
+                                font.pixelSize: 16
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left
                                 anchors.leftMargin: 10
                                 anchors.right: parent.right
                                 elide: Text.ElideRight
+                                wrapMode: Text.WordWrap
                             }
                             Text {
                                 text: deadline
-                                color: "firebrick"
-                                font.pixelSize: 12
+                                color: "#ff5252"
+                                font.pixelSize: 16
                                 enabled: deadline.length > 0
                                 anchors.right: parent.right
                                 anchors.bottom: parent.bottom
@@ -882,8 +900,8 @@ ApplicationWindow {
                                 anchors.top: parent.top
                                 anchors.topMargin: 8
                                 anchors.rightMargin: 10
-                                width: 15
-                                height: 15
+                                width: 18
+                                height: 18
                                 source: isReady ? "icons/success.png" : "icons/processing.png"
                             }
                         }
@@ -954,18 +972,19 @@ ApplicationWindow {
         Rectangle {
             id: doneColumn
             anchors.top: parent.top
-            anchors.bottom: parent.bottom
             anchors.left: doingColumn.right
             anchors.topMargin: 15
             anchors.leftMargin: 15
             anchors.bottomMargin: 15
+            opacity: 0.9
             gradient: QQ215.Gradient {
                 orientation: Gradient.Horizontal
                 GradientStop { position: 0.0; color: "#1e1f21" }
                 GradientStop { position: 1.0; color: "#222326" }
             }
             width: (parent.width - toolbar.width) / 4 - 30
-            radius: 15
+            height: listDones.height + doneText.height + 40
+            radius: 5
 
             Text {
                 id: doneText
@@ -994,31 +1013,33 @@ ApplicationWindow {
                 id: listDones
                 anchors.top: doneText.bottom
                 anchors.left: doneColumn.left
-                anchors.bottom: doneColumn.bottom
                 anchors.right: doneColumn.right
                 anchors.topMargin: 10
                 anchors.leftMargin: 10
-                anchors.bottomMargin: 10
                 anchors.rightMargin: 10
                 spacing: 10
                 model: kanbanBoardModelDone
+                height: Math.min(listDones.count * (80 + 10), root.height - 90)
+                clip: true
 
                 property var dragParent: dragContainerDone
 
                 delegate:Item {
                     id: delegateItem
                     width:listDones.width
-                    height: 60
+                    height: 80
 
                     Rectangle {
                         id: dragRectDone
                         gradient: QQ215.Gradient {
                             orientation: Gradient.Horizontal
                             GradientStop { position: 0.0; color: "#343437" }
-                            GradientStop { position: 1.0; color: "#3d3d40" }
+                            GradientStop { position: 1.0; color: "#222222" }
                         }
-                        height: 60
+                        height: 80
                         width: listDones.width
+                        radius: 5
+                        opacity: 0.9
 
                         property int dragItemIndex: index
 
@@ -1051,17 +1072,18 @@ ApplicationWindow {
                             Text {
                                 text: title
                                 color: "white"
-                                font.pixelSize: 12
+                                font.pixelSize: 16
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left
                                 anchors.leftMargin: 10
                                 anchors.right: parent.right
                                 elide: Text.ElideRight
+                                wrapMode: Text.WordWrap
                             }
                             Text {
                                 text: deadline
-                                color: "firebrick"
-                                font.pixelSize: 12
+                                color: "#ff5252"
+                                font.pixelSize: 16
                                 enabled: deadline.length > 0
                                 anchors.right: parent.right
                                 anchors.bottom: parent.bottom

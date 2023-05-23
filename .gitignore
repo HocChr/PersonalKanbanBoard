@@ -15,3 +15,5 @@ tmp.json
 */build/
 build/
 */dist/
+burndown/
+platforms/

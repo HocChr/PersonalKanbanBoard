@@ -1,0 +1,2 @@
+Für main.py: pyinstaller --onedir --icon="kanban_icon_small.ico" --hidden-import PyQt5.sip --noconsole .\main.py
+Für burndown.py: pyinstaller --onedir --icon="kanban_icon_small.ico" --hidden-import PyQt6.sip --noconsole .\burndown_model.py

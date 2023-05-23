@@ -38,7 +38,7 @@ class Burndown(QObject):
     @pyqtSlot()
     def runChart(self):
         self._write_selection()
-        dirname = os.path.normpath(os.path.join(os.getcwd(), "dist/burndown_model.exe"))
+        dirname = os.path.normpath(os.path.join(os.getcwd(), "burndown/burndown_model.exe"))
         subprocess.call([dirname])
 
 app = QGuiApplication(sys.argv)
