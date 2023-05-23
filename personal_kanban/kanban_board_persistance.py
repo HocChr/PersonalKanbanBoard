@@ -14,6 +14,25 @@ def customDataDecoder(dataDict):
 def customDataDecoder(dataDict):
     return namedtuple('X', dataDict.keys())(*dataDict.values())
 
+def write_selection_to_file(selection: []):
+    with open('tmp.json', 'w', encoding ='utf8') as json_file:
+        json.dump([obj.__dict__ for obj in selection], json_file)
+
+def read_selection_from_file():
+    board = kanban_board.KanbanBoard()
+    with open('tmp.json', 'r') as f:
+        data = json.load(f, object_hook=customDataDecoder)
+        for it in data:
+            entity = kanaban_entity.KanabanEntity(it.title,
+                                                  it.description,
+                                                  it.deadline,
+                                                  it.status,
+                                                  it.color,
+                                                  it.isReady,
+                                                  it.creation_date,
+                                                  it.done_date)
+            board.append_entity(entity)
+    return board
 
 class KanbanBoardHandler:
     def __init__(self):
@@ -35,7 +54,14 @@ class KanbanBoardHandler:
           with open(self.index_to_file_paths[board_index], 'r') as f:
               data = json.load(f, object_hook=customDataDecoder)
               for it in data:
-                  entity = kanaban_entity.KanabanEntity(it.title, it.description, it.deadline, it.status, it.color, it.isReady)
+                  entity = kanaban_entity.KanabanEntity(it.title,
+                                                        it.description,
+                                                        it.deadline,
+                                                        it.status,
+                                                        it.color,
+                                                        it.isReady,
+                                                        it.creation_date,
+                                                        it.done_date)
                   self._kanban_board.append_entity(entity)
 
     def get_kanban_board(self, board_index: int, reload = False):
@@ -46,4 +72,4 @@ class KanbanBoardHandler:
     def save(self, board_index):
         with open(self.index_to_file_paths[board_index], 'w', encoding ='utf8') as json_file:
            json.dump([obj.__dict__ for obj in self._kanban_board.board], json_file)
-   
+

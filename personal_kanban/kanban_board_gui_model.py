@@ -1,5 +1,6 @@
 from __future__ import annotations
 from PyQt5.QtCore import QAbstractListModel, QModelIndex, Qt, pyqtSlot
+from datetime import date
 import kanaban_entity
 import kanban_board
 import kanban_board_persistance
@@ -11,6 +12,8 @@ class KanbanBoardModel(QAbstractListModel):
     DeadlineRole = Qt.UserRole + 3
     ColorRole = Qt.UserRole + 4
     IsReadyRole = Qt.UserRole + 5
+    CreatedDateRole = Qt.UserRole + 6
+    DoneDateRole = Qt.UserRole + 7
 
     def __init__(self, board_handler, status: int, parent=None):
         super(KanbanBoardModel, self).__init__(parent)
@@ -34,6 +37,10 @@ class KanbanBoardModel(QAbstractListModel):
              return self.kanban_board[row].color
          if role == KanbanBoardModel.IsReadyRole:
              return self.kanban_board[row].isReady
+         if role == KanbanBoardModel.CreatedDateRole:
+             return self.kanban_board[row].creation_date
+         if role == KanbanBoardModel.DoneDateRole:
+             return self.kanban_board[row].done_date
     
     def rowCount(self, parent=QModelIndex()):
         return sum(1 for d in self.kanban_board if d.status == self.status)
@@ -44,7 +51,9 @@ class KanbanBoardModel(QAbstractListModel):
             KanbanBoardModel.DescriptionRole: b'description',
             KanbanBoardModel.DeadlineRole: b'deadline',
             KanbanBoardModel.ColorRole: b'mycolor',
-            KanbanBoardModel.IsReadyRole: b'isReady'
+            KanbanBoardModel.IsReadyRole: b'isReady',
+            KanbanBoardModel.CreatedDateRole: b'createdDate',
+            KanbanBoardModel.DoneDateRole: b'doneDate'
         }
      
     @pyqtSlot(int, bool)
@@ -90,9 +99,16 @@ class KanbanBoardModel(QAbstractListModel):
         self.resetModel()
         return 1 
 
-    @pyqtSlot(str, str, str, int, bool)
-    def addData(self, title, description, deadline, color, isReady):
-        entity = kanaban_entity.KanabanEntity(title, description, deadline, self.status, color, isReady) 
+    @pyqtSlot(str, str, str, int)
+    def addData(self, title, description, deadline, color):
+        entity = kanaban_entity.KanabanEntity(title,
+                                             description,
+                                             deadline,
+                                             self.status,
+                                             color,
+                                             False,
+                                             date.today().strftime("%d/%m/%Y"),
+                                             "") 
         self.original_data.insert(0, entity)
         self.resetModel()
     
@@ -109,6 +125,16 @@ class KanbanBoardModel(QAbstractListModel):
         item.color = color
         item.isReady = isReady
         self.resetModel()
+    
+    @pyqtSlot(int, str, str)
+    def changeInternalData(self, original_index, createdDate, doneDate):
+        item = self.original_data[original_index]
+        containing = [x for x in self.kanban_board if id(x) == id(item)]
+        if len(containing) == 0:
+            return
+             
+        item.creation_date = createdDate
+        item.done_date = doneDate
 
     @pyqtSlot(result=int)
     def getStatus(self):
@@ -118,6 +144,11 @@ class KanbanBoardModel(QAbstractListModel):
     def setStatus(self, row: int, status: int):
         if self.kanban_board[row].status != status:
             self.kanban_board[row].isReady = False
+            # set done date dragged in done    
+            if status == 3:
+                self.kanban_board[row].done_date = date.today().strftime("%d/%m/%Y")
+            else:
+                self.kanban_board[row].done_date = ""
         self.kanban_board[row].status = status
 
     @pyqtSlot()
@@ -174,3 +205,4 @@ class KanbanBoardModel(QAbstractListModel):
             self.kanban_board = [x for x in self.original_data if x.status == self.status and not x.color == self.filterColor]
         else:
             self.kanban_board = [x for x in self.original_data if x.status == self.status] 
+
