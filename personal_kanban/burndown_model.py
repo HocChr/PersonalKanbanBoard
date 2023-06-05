@@ -2,7 +2,7 @@ import datetime
 from datetime import date, timedelta
 import sys
 import math
-from PySide6.QtCharts import (QBarCategoryAxis, QBarSeries, QBarSet, QChart,
+from PySide6.QtCharts import (QBarCategoryAxis, QStackedBarSeries, QBarSet, QChart,
                               QChartView, QValueAxis)
 from PySide6.QtCore import Qt, QDate, QDateTime, QTime
 from PySide6.QtGui import QPainter
@@ -74,7 +74,7 @@ class TestChart(QMainWindow):
 
         self.add_tasks()
 
-        self.series = QBarSeries()
+        self.series = QStackedBarSeries()
         self.series.append(self.set_0)
         self.series.append(self.set_1)
         self.series.append(self.set_2)
@@ -84,6 +84,9 @@ class TestChart(QMainWindow):
         self.chart.addSeries(self.series)
         self.chart.setTitle("Burndown chart, burndown rate in tasks per day: " + str(round(self.burndown_rate, 2)) + ". "
             "Time interval: " + str(self.start.toString("yy/MM/dd")) + " - " + str(self.end.toString("yy/MM/dd")))
+        font = self.chart.titleFont()
+        font.setPointSizeF(20)
+        self.chart.setTitleFont(font)
         self.chart.setAnimationOptions(QChart.SeriesAnimations)
 
         self.axis_x = QBarCategoryAxis()
@@ -94,11 +97,17 @@ class TestChart(QMainWindow):
         self.axis_y = QValueAxis()
         self.axis_y.setRange(0, self._calc_max_tasks())
         self.axis_y.setLabelFormat("%i")
+        font = self.axis_y.labelsFont()
+        font.setPointSizeF(20)
+        self.axis_y.setLabelsFont(font)
         self.chart.addAxis(self.axis_y, Qt.AlignLeft)
         self.series.attachAxis(self.axis_y)
 
         self.chart.legend().setVisible(True)
         self.chart.legend().setAlignment(Qt.AlignBottom)
+        font = self.chart.legend().font()
+        font.setPointSizeF(20)
+        self.chart.legend().setFont(font)
 
         self._chart_view = QChartView(self.chart)
         self._chart_view.setRenderHint(QPainter.Antialiasing)
@@ -137,11 +146,21 @@ class TestChart(QMainWindow):
         # instead: you could order the list by date and then walk once over the list
             start_date += delta
             
-            created_ones = [x for x in self.kanban_board.board if x.creation_date != "" and
-                datetime.datetime.strptime(x.creation_date, '%d/%m/%Y').date() <= start_date]
-    
+            created_ones = []
+            for i in range(len(self.kanban_board.board)):
+                if (self.kanban_board.board[i].done_date != "" and
+                    datetime.datetime.strptime(self.kanban_board.board[i].done_date, '%d/%m/%Y').date() < self.start):
+                    continue
+                if (self.kanban_board.board[i].creation_date != "" and
+                    datetime.datetime.strptime(self.kanban_board.board[i].creation_date, '%d/%m/%Y').date() >
+                        datetime.datetime.strptime(str(start_date), '%Y-%m-%d').date()):
+                    continue
+                else:
+                    created_ones.append(self.kanban_board.board[i])
+
             not_dones = [x for x in created_ones if x.status != 3 or x.done_date != "" and
                                      datetime.datetime.strptime(x.done_date, '%d/%m/%Y').date() > start_date]
+
             if today >= start_date:
                 qtDateTimeTmp = QDateTime(self.start, an_hour)
                 self.set_0.append(len(not_dones))
