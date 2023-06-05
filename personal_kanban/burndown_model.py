@@ -146,11 +146,21 @@ class TestChart(QMainWindow):
         # instead: you could order the list by date and then walk once over the list
             start_date += delta
             
-            created_ones = [x for x in self.kanban_board.board if x.creation_date != "" and
-                datetime.datetime.strptime(x.creation_date, '%d/%m/%Y').date() <= start_date]
-    
+            created_ones = []
+            for i in range(len(self.kanban_board.board)):
+                if (self.kanban_board.board[i].done_date != "" and
+                    datetime.datetime.strptime(self.kanban_board.board[i].done_date, '%d/%m/%Y').date() < self.start):
+                    continue
+                if (self.kanban_board.board[i].creation_date != "" and
+                    datetime.datetime.strptime(self.kanban_board.board[i].creation_date, '%d/%m/%Y').date() >
+                        datetime.datetime.strptime(str(start_date), '%Y-%m-%d').date()):
+                    continue
+                else:
+                    created_ones.append(self.kanban_board.board[i])
+
             not_dones = [x for x in created_ones if x.status != 3 or x.done_date != "" and
                                      datetime.datetime.strptime(x.done_date, '%d/%m/%Y').date() > start_date]
+
             if today >= start_date:
                 qtDateTimeTmp = QDateTime(self.start, an_hour)
                 self.set_0.append(len(not_dones))
