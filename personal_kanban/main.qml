@@ -372,7 +372,7 @@ ApplicationWindow {
                 anchors.bottom: closeAppButton.top 
                 anchors.leftMargin: 15
                 anchors.rightMargin: 15
-                anchors.bottomMargin: 5
+                anchors.bottomMargin: 15
                 height: 40
                 background: Rectangle { color: "transparent"; border.width: 2; border.color: "darkgrey"; radius: 3; }
                 Text {
@@ -399,7 +399,7 @@ ApplicationWindow {
                 anchors.rightMargin: 15
                 anchors.bottomMargin: 15
                 height: 40
-                background: Rectangle { color: "transparent"; border.width: 2; border.color: "darkgrey"; radius: 3; }
+                background: Rectangle { color: "transparent"; border.width: 2; border.color: "firebrick"; radius: 3; }
                 Text {
                     anchors.fill: parent
                     horizontalAlignment: Text.AlignHCenter
@@ -1364,7 +1364,7 @@ ApplicationWindow {
 
                         TextField {
                             id: textDate
-                            width: 175
+                            width: 175 
                             anchors.verticalCenter: parent.verticalCenter
                             color: "white"
                             font.pointSize: 10
@@ -1382,11 +1382,16 @@ ApplicationWindow {
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
                                     font.pixelSize: 10
-                                    text: "DUE DATE"
+                                    text: textDate.text.length > 0 ? "DELETE" : "DUE DATE"
                                     font.bold: true
                                 }
                                 onClicked: {
-                                    cal.visible = true
+                                    if(textDate.text.length > 0) {
+                                        textDate.text = "";
+                                    }
+                                    else {
+                                        cal.visible = true
+                                    }
                                 }
                             }
                         }
