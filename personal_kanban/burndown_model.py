@@ -135,10 +135,15 @@ class TestChart(QMainWindow):
         
     def add_tasks(self):
         an_hour = QTime(16, 15) # 16 Uhr 15, an arbitrary time
-        start_date = self.start.toPython()
         end_date = self.end.toPython()
         today = date.today()
-        delta =  timedelta(days=5)
+        start_date = today 
+        delta = timedelta(days=5)
+
+        # calculate the start date, so that today is a discrete element
+        st = self.start.toPython()
+        while start_date >= st:
+            start_date -= delta
 
         not_dones = []
         while start_date <= end_date:
