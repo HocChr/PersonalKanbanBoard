@@ -2,9 +2,11 @@
 *.swp
 *.exe
 *.spec
+*.orig
 *.**~
 *.***~
-
+aai.json
+archive_strategic.json
 tags
 
 coordination.json
@@ -14,6 +16,6 @@ tmp.json
 */__pycache__/
 */build/
 build/
-*/dist/
+dist/
 burndown/
 platforms/

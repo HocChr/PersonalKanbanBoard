@@ -91,11 +91,7 @@ class KanbanBoardModel(QAbstractListModel):
 
     @pyqtSlot(int, result=int)
     def deleteItem(self, original_index: int):
-        item = self.original_data[original_index]
-        containing = [x for x in self.kanban_board if id(x) == id(item)]
-        if len(containing) == 0:
-            return 0
-        del self.original_data[original_index]
+        self._remove_item_from_original_data(original_index)
         self.resetModel()
         return 1 
 
@@ -189,6 +185,13 @@ class KanbanBoardModel(QAbstractListModel):
         self.beginRemoveRows(QModelIndex(), local_source, local_source)
         self.endRemoveRows()
  
+    @pyqtSlot()
+    def archive(self):
+        kanban_board_persistance.archive(self.board_index, self.kanban_board)
+        for i in range(len(self.kanban_board)):
+            self._remove_item_from_original_data(self.getOriginalIndex(i))
+        self.resetModel()
+
     def swapPositions(self, lst, pos1, pos2):
         item = lst[pos1]
         item.status = self.status
@@ -206,3 +209,9 @@ class KanbanBoardModel(QAbstractListModel):
         else:
             self.kanban_board = [x for x in self.original_data if x.status == self.status] 
 
+    def _remove_item_from_original_data(self, original_index: int):
+        item = self.original_data[original_index]
+        containing = [x for x in self.kanban_board if id(x) == id(item)]
+        if len(containing) == 0:
+            return 0
+        del self.original_data[original_index]

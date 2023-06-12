@@ -138,7 +138,7 @@ class TestChart(QMainWindow):
         start_date = self.start.toPython()
         end_date = self.end.toPython()
         today = date.today()
-        delta =  timedelta(days=10)
+        delta =  timedelta(days=5)
 
         not_dones = []
         while start_date <= end_date:

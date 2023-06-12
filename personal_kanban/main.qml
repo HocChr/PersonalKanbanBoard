@@ -22,6 +22,7 @@ ApplicationWindow {
     signal itemDataChange(var runArgs, var itemIndex, var title, var description, var deadline, var col, var isReady);
     signal internalItemDataChange(var itemIndex, var createdDate, var doneDate);
     signal itemDelete(var itemIndex);
+    signal archive();
 
     ListModel {
         id: colorModel
@@ -82,6 +83,9 @@ ApplicationWindow {
         kanbanBoardModelDone.setBoardIndex(root.boardIndex, false)
     }
 
+    onArchive: {
+        kanbanBoardModelDone.archive();
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -340,7 +344,7 @@ ApplicationWindow {
                 id: startBurndownButton
                 anchors.left: toolbar.left
                 anchors.right: toolbar.right
-                anchors.bottom: closeAppButton.top 
+                anchors.bottom: archiveButton.top 
                 anchors.leftMargin: 15
                 anchors.rightMargin: 15
                 anchors.bottomMargin: 15
@@ -358,6 +362,31 @@ ApplicationWindow {
 
                 onClicked: {
                     burndown.runChart();
+                }
+            }
+
+            Button {
+                id: archiveButton
+                anchors.left: toolbar.left
+                anchors.right: toolbar.right
+                anchors.bottom: closeAppButton.top 
+                anchors.leftMargin: 15
+                anchors.rightMargin: 15
+                anchors.bottomMargin: 5
+                height: 40
+                background: Rectangle { color: "transparent"; border.width: 2; border.color: "darkgrey"; radius: 3; }
+                Text {
+                    anchors.fill: parent
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 12
+                    color: "darkgrey"
+                    text: "ARCHIVE"
+                    font.bold: true
+                }
+
+                onClicked: {
+                    archiveDonesPopup.open();
                 }
             }
 
@@ -1235,7 +1264,7 @@ ApplicationWindow {
                                 font.bold: true
                             }
 
-                            onClicked: {
+                            onPressAndHold: {
                                 if (newTaskDialog.startArgument > 0)
                                     root.itemDelete(newTaskDialog.itemIndex)
                                 newTaskDialog.close();
@@ -1689,6 +1718,105 @@ ApplicationWindow {
         }
 
         //  ---------------------------- End Statistics Dialog ------------------------------------------------
+        
+        Popup {
+            id: archiveDonesPopup
+            height: 200
+            width: 400
+            x: (parent.width - width) / 2
+            y: (parent.height - height) / 2
+            modal: true
+            focus: true
+            closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+
+            Rectangle {
+                id: archiveDonesPopupRect
+                height: archiveDonesPopup.height
+                width: archiveDonesPopup.width
+                x: (parent.width - width) / 2
+                y: (parent.height - height) / 2
+                color: "#232323"
+                border.width: 1
+                border.color: "darkgrey" 
+
+                ColumnLayout {
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.margins: 30
+                    spacing: 20
+
+                    // Header
+                    Rectangle  {
+                        height: 50;
+                        width: parent.width
+                        color: "transparent"
+
+                        Label {
+                            text: "Are you sure you want to archive the tasks from the Done column? At the moment you cannot retrieve them."
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            width: parent.width
+                            color: "white"
+                            font.pointSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+
+                }
+
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.margins: 30
+                    height: 40
+                    color: "transparent"
+
+                    Row {
+                        spacing: 10
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        Button {
+                            height: 25// textDate.height
+                            width: 66
+                            background: Rectangle { color: "transparent"; border.width: 1; border.color: "firebrick"; radius: 3; }
+                            Text {
+                                anchors.fill: parent
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                font.pixelSize: 10
+                                color: "firebrick"
+                                text: "YES"
+                                font.bold: true
+                            }
+                            onClicked: {
+                                archive();
+                                archiveDonesPopup.close();
+                            }
+                        }
+
+                        Button {
+                            height: 25// textDate.height
+                            width: 66
+                            background: Rectangle { color: "transparent"; border.width: 1; border.color: "darkgrey"; radius: 3; }
+                            Text {
+                                anchors.fill: parent
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                font.pixelSize: 10
+                                color: "#FFFFFF"
+                                text: "NO"
+                                font.bold: true
+                            }
+
+                            onClicked: {
+                                archiveDonesPopup.close();
+                            }
+                        }
+                    }
+                }
+           }
+        }
 
         // --- Drag item with highes z-Layer to reparent the drag item to it (to ensure the drag item stays on top)
         Item {
