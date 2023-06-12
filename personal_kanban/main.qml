@@ -167,34 +167,8 @@ ApplicationWindow {
             }
 
             Button {
-                id: coordinationButton
-                anchors.top: strategicButton.bottom
-                anchors.left: toolbar.left
-                anchors.right: toolbar.right
-                anchors.topMargin: 5
-                anchors.leftMargin: 15
-                anchors.rightMargin: 15
-                height: 40
-                background: Rectangle { color: root.boardIndex == 2 ? "grey" : "transparent"; border.width: 2; border.color: "darkgrey"; radius: 3; }
-                Text {
-                    anchors.fill: parent
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 12
-                    color: "#FFFFFF"
-                    text: "COORDINATION"
-                    font.bold: true
-                }
-
-                onClicked: {
-                    root.boardIndex = 2
-                    root.title = "COORDINATION"
-                }
-            }
-
-            Button {
                 id: operationalButton
-                anchors.top: coordinationButton.bottom
+                anchors.top: strategicButton.bottom
                 anchors.left: toolbar.left
                 anchors.right: toolbar.right
                 anchors.topMargin: 5
