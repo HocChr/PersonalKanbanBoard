@@ -1,4 +1,4 @@
-Für main.py: pyinstaller --onedir --icon="kanban_icon_small.ico" --hidden-import PyQt5.sip --noconsole .\main.py
+Für main.py: pyinstaller --onedir --icon="kanban_icon_small.ico" --hidden-import PyQt5.sip --paths=C:\Users\chochheim\PythonProjects\PersonalKanbanBoard\personal_kanban\ --noconsole .\main.py
 Für burndown.py: pyinstaller --onedir --icon="kanban_icon_small.ico" --hidden-import PyQt6.sip --paths=C:\Users\chochheim\PythonProjects\PersonalKanbanBoard\personal_kanban\ --noconsole .\personal_kanban\burndown_model.py
 
 If you run in the Error "Permission denied", the just install something with pip, even if this thing is already insalled, e.g. pip install pyside6

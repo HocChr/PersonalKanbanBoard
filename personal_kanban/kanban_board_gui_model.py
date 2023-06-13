@@ -91,7 +91,9 @@ class KanbanBoardModel(QAbstractListModel):
 
     @pyqtSlot(int, result=int)
     def deleteItem(self, original_index: int):
-        self._remove_item_from_original_data(original_index)
+        val = self._remove_item_from_original_data(original_index)
+        if val == 0:
+            return 0
         self.resetModel()
         return 1 
 

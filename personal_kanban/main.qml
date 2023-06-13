@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.0
 import QtQuick.Controls 1.4 as QQC1
 import QtQuick.Controls.Styles 1.4 as QQC1Styles
 import QtQuick 2.15 as QQ215
+import QtQuick.Dialogs 1.1
+
 
 ApplicationWindow {
     visible: true
@@ -32,6 +34,9 @@ ApplicationWindow {
         ListElement { name: "blue"; col: "#5252ff"; key: 3; }
         ListElement { name: "green"; col: "#60ff52"; key: 4; }
         ListElement { name: "yellow"; col: "#fcff52"; key: 5; }
+        ListElement { name: "brown"; col: "#3c1409"; key: 6; }
+        ListElement { name: "darkred"; col: "#720017"; key: 7; }
+        ListElement { name: "orange"; col: "#ff7f27"; key: 8; }
     }
 
     function find(model, criteria) {
@@ -41,7 +46,6 @@ ApplicationWindow {
 
     onItemDataChange: {
         if(runArgs == 0) {
-            //kanbanBoardModelTodo.addData(title, description, deadline, col, isReady)
             kanbanBoardModelTodo.addData(title, description, deadline, col)
         }
         else if(runArgs == 1) {
@@ -260,7 +264,7 @@ ApplicationWindow {
                 // Color Selection
                 Rectangle {
                     id: globalColorSelectionRect
-                    height: 300;
+                    height: 400;
                     anchors.left: colorFilterButton.left
                     anchors.right: colorFilterButton.right
                     radius: 3
@@ -1188,6 +1192,10 @@ ApplicationWindow {
                 newTaskDialog.open()
             }
 
+            function deleteItem() {
+                root.itemDelete(newTaskDialog.itemIndex)
+            }
+
             Rectangle {
                 id: newTaskRect
                 height: newTaskDialog.height
@@ -1238,9 +1246,10 @@ ApplicationWindow {
                                 font.bold: true
                             }
 
-                            onPressAndHold: {
-                                if (newTaskDialog.startArgument > 0)
-                                    root.itemDelete(newTaskDialog.itemIndex)
+                            onClicked: {
+                                if (newTaskDialog.startArgument > 0) {
+                                    deleteDialog.open()
+                                }
                                 newTaskDialog.close();
                             }
                         }
@@ -1698,6 +1707,14 @@ ApplicationWindow {
 
         //  ---------------------------- End Statistics Dialog ------------------------------------------------
         
+        //
+        // --------------------------------------------------------------------------------------------------
+        //
+        //                                      ARCHIVE DIALOG
+        //
+        // --------------------------------------------------------------------------------------------------
+        //
+
         Popup {
             id: archiveDonesPopup
             height: 200
@@ -1797,6 +1814,113 @@ ApplicationWindow {
            }
         }
 
+        //
+        // --------------------------------------------------------------------------------------------------
+        //
+        //                                     DELETE ITEM DIALOG 
+        //
+        // --------------------------------------------------------------------------------------------------
+        //
+
+        Popup {
+            id: deleteDialog
+            height: 175 
+            width: 400
+            x: (parent.width - width) / 2
+            y: (parent.height - height) / 2
+            modal: true
+            focus: true
+            closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+
+            Rectangle {
+                id: deleteDialogRect
+                height: deleteDialog.height
+                width: deleteDialog.width
+                x: (parent.width - width) / 2
+                y: (parent.height - height) / 2
+                color: "#232323"
+                border.width: 1
+                border.color: "darkgrey" 
+
+                ColumnLayout {
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.margins: 30
+                    spacing: 20
+
+                    // Header
+                    Rectangle  {
+                        height: 50;
+                        width: parent.width
+                        color: "transparent"
+
+                        Label {
+                            text: "Do you want to delete this task? This can not be retained!"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            width: parent.width
+                            color: "white"
+                            font.pointSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+
+                }
+
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.margins: 30
+                    height: 40
+                    color: "transparent"
+
+                    Row {
+                        spacing: 10
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        Button {
+                            height: 25// textDate.height
+                            width: 66
+                            background: Rectangle { color: "transparent"; border.width: 1; border.color: "firebrick"; radius: 3; }
+                            Text {
+                                anchors.fill: parent
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                font.pixelSize: 10
+                                color: "firebrick"
+                                text: "YES"
+                                font.bold: true
+                            }
+                            onClicked: {
+                                newTaskDialog.deleteItem();
+                                deleteDialog.close();
+                            }
+                        }
+
+                        Button {
+                            height: 25// textDate.height
+                            width: 66
+                            background: Rectangle { color: "transparent"; border.width: 1; border.color: "darkgrey"; radius: 3; }
+                            Text {
+                                anchors.fill: parent
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                font.pixelSize: 10
+                                color: "#FFFFFF"
+                                text: "NO"
+                                font.bold: true
+                            }
+
+                            onClicked: {
+                                deleteDialog.close();
+                            }
+                        }
+                    }
+                }
+           }
+        }
+        
         // --- Drag item with highes z-Layer to reparent the drag item to it (to ensure the drag item stays on top)
         Item {
             id: dragContainerTodo
